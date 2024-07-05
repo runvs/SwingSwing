@@ -106,7 +106,7 @@ void StateGame::triggerSwing()
 
 float StateGame::convertTimeToPower()
 {
-    constexpr float freq = 2.0f;
-    constexpr float scale = 1.0f;
-    return abs(sin(m_spacePressedTimer * freq));
+    constexpr float freq = 0.75f;
+    float t = m_spacePressedTimer;
+    return 2.0f * abs(t * freq - std::floor(t * freq + 0.5f));
 }

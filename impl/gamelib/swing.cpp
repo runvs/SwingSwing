@@ -50,6 +50,5 @@ Swing::Swing(std::shared_ptr<jt::Box2DWorldInterface> world)
 
 void Swing::trigger(float strength)
 {
-    std::cout << strength << std::endl;
     m_physicsObject->addForceToCenter(jt::Vector2f { 40000.0f * strength, 0.0f });
 }
