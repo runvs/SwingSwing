@@ -8,8 +8,6 @@ jt::LogTargetFile::LogTargetFile()
 
 void jt::LogTargetFile::doLog(jt::LogEntry const& entry)
 {
-    std::string sourceText = std::string { entry.source.file_name() } + ":"
-        + std::to_string(entry.source.line()) + " [" + entry.source.function_name() + "]";
-
+    std::string sourceText;
     m_file << entry.time << ": " << entry.message << " " << sourceText << std::endl;
 }

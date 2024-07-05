@@ -395,3 +395,6 @@ cmake-build-*
 
 doc/doxygen/html
 doc/doxygen/latex
+
+### Mac-Kram ###
+.DS_Store
