@@ -10,7 +10,7 @@
 
 void StateGame::onCreate()
 {
-    m_world = std::make_shared<jt::Box2DWorldImpl>(jt::Vector2f { 0.0f, 0.0f });
+    m_world = std::make_shared<jt::Box2DWorldImpl>(jt::Vector2f { 0.0f, 10.0f });
 
     float const w = static_cast<float>(GP::GetWindowSize().x);
     float const h = static_cast<float>(GP::GetWindowSize().y);
@@ -38,7 +38,11 @@ void StateGame::onCreate()
 
 void StateGame::onEnter() { }
 
-void StateGame::createPlayer() { }
+void StateGame::createPlayer()
+{
+    m_swing = std::make_shared<Swing>(m_world);
+    add(m_swing);
+}
 
 void StateGame::onUpdate(float const elapsed)
 {

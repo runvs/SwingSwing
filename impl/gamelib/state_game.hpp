@@ -2,6 +2,7 @@
 #define GAME_STATE_GAME_HPP
 
 #include "bar.hpp"
+#include "swing.hpp"
 #include <box2dwrapper/box2d_world_interface.hpp>
 #include <game_state.hpp>
 #include <memory>
@@ -26,6 +27,8 @@ private:
     std::shared_ptr<Hud> m_hud;
     std::shared_ptr<jt::Box2DWorldInterface> m_world { nullptr };
     std::shared_ptr<jt::Bar> m_bar { nullptr };
+
+    std::shared_ptr<Swing> m_swing;
 
     bool m_running { true };
     bool m_hasEnded { false };
