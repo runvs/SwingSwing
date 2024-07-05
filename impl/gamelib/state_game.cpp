@@ -10,7 +10,7 @@
 
 void StateGame::onCreate()
 {
-    m_world = std::make_shared<jt::Box2DWorldImpl>(jt::Vector2f { 0.0f, 10.0f });
+    m_world = std::make_shared<jt::Box2DWorldImpl>(jt::Vector2f { 0.0f, 200.0f });
 
     float const w = static_cast<float>(GP::GetWindowSize().x);
     float const h = static_cast<float>(GP::GetWindowSize().y);
@@ -98,7 +98,11 @@ void StateGame::endGame()
 
 std::string StateGame::getName() const { return "State Game"; }
 
-void StateGame::triggerSwing() { m_spacePressedTimer = 0.0f; }
+void StateGame::triggerSwing()
+{
+    m_swing->trigger(convertTimeToPower());
+    m_spacePressedTimer = 0.0f;
+}
 
 float StateGame::convertTimeToPower()
 {
