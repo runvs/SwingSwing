@@ -32,6 +32,8 @@ void StateGame::onCreate()
 
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
+
+    m_bar = std::make_shared<jt::Bar>(16, 128, false, textureManager());
 }
 
 void StateGame::onEnter() { }
@@ -41,20 +43,28 @@ void StateGame::createPlayer() { }
 void StateGame::onUpdate(float const elapsed)
 {
     if (m_running) {
+
         m_world->step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
         if (getGame()->input().keyboard()->justPressed(jt::KeyCode::A)) {
-            m_scoreP1++;
-            m_hud->getObserverScoreP1()->notify(m_scoreP1);
-        }
-        if (getGame()->input().keyboard()->justPressed(jt::KeyCode::D)) {
-            m_scoreP2++;
-            m_hud->getObserverScoreP2()->notify(m_scoreP2);
+            m_score++;
+            m_hud->getObserverScoreP1()->notify(m_score);
         }
         if (getGame()->input().keyboard()->pressed(jt::KeyCode::LShift)
             && getGame()->input().keyboard()->pressed(jt::KeyCode::Escape)) {
             endGame();
         }
+
+        if (getGame()->input().keyboard()->pressed(jt::KeyCode::Space)) {
+            m_spacePressedTimer += elapsed;
+        }
+        if (getGame()->input().keyboard()->justReleased(jt::KeyCode::Space)) {
+            triggerSwing();
+        }
+
+        m_bar->setCurrentValue(convertTimeToPower());
+        m_bar->setMaxValue(1.0f);
+        m_bar->update(elapsed);
     }
 
     m_background->update(elapsed);
@@ -66,6 +76,7 @@ void StateGame::onDraw() const
     m_background->draw(renderTarget());
     drawObjects();
     m_vignette->draw();
+    m_bar->draw(renderTarget());
     m_hud->draw();
 }
 
@@ -82,3 +93,12 @@ void StateGame::endGame()
 }
 
 std::string StateGame::getName() const { return "State Game"; }
+
+void StateGame::triggerSwing() { m_spacePressedTimer = 0.0f; }
+
+float StateGame::convertTimeToPower()
+{
+    constexpr float freq = 2.0f;
+    constexpr float scale = 1.0f;
+    return abs(sin(m_spacePressedTimer * freq));
+}
