@@ -109,6 +109,13 @@ endfunction()
 function(jt_link_fmod TGT)
     message(STATUS "FMOD_DIR: ${FMOD_DIR}")
     if(MSVC)
+
+        target_include_directories(${TGT} PUBLIC ${FMOD_DIR}/api/core/inc)
+        target_include_directories(${TGT} PUBLIC ${FMOD_DIR}/api/studio/inc)
+
+        target_link_directories(${TGT} PUBLIC ${FMOD_DIR}/api/core/lib/x64)
+        target_link_directories(${TGT} PUBLIC ${FMOD_DIR}/api/studio/lib/x64)
+
         target_link_libraries(${TGT} PUBLIC fmod_vc)
         target_link_libraries(${TGT} PUBLIC fmodstudio_vc)
     elseif (EMSCRIPTEN)
