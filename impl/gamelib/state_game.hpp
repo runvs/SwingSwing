@@ -74,6 +74,7 @@ private:
 
     void createNewTarget();
     float getCurrentWidth();
+    void createGrass();
 };
 
 #endif

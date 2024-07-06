@@ -1,5 +1,6 @@
 ﻿#include "state_game.hpp"
 #include "random/random.hpp"
+#include "strutils.hpp"
 #include "tweens/tween_alpha.hpp"
 #include "tweens/tween_position.hpp"
 #include <box2dwrapper/box2d_world_impl.hpp>
@@ -29,30 +30,15 @@ void StateGame::onCreate()
         = std::make_shared<jt::Sprite>("assets/schaukel_vorne.aseprite", textureManager());
     m_schaukelFront->update(0.0f);
 
-    for (auto i = 0u; i != 80u; ++i) {
-        auto g = std::make_shared<jt::Animation>();
-        std::string name = "gras";
-        if (jt::Random::getChance()) {
-            name = "flower";
-        }
-        if (jt::Random::getChance()) {
-            name += "1";
-        } else {
-            name += "2";
-        }
-        g->loadFromAseprite("assets/" + name + ".aseprite", textureManager());
-        g->play("idle");
-        g->setAnimationSpeedFactor(jt::Random::getFloat(0.7f, 1.2f));
-        g->setPosition(jt::Random::getRandomPointIn(jt::Rectf { 0.0f, 206.0f, 320.0f, 34.0f }));
-        m_grass.emplace_back(std::move(g));
-    }
+    m_clouds = std::make_shared<jt::MarioCloudsHorizontal>(
+        5, jt::Vector2f { GP::GetScreenSize().x, 100.0f }, jt::Vector2f { 40.0f, 10.0f });
+    m_clouds->setGameInstance(getGame());
+    m_clouds->create();
+
+    createGrass();
 
     createPlayer();
 
-    m_clouds = std::make_shared<jt::MarioCloudsHorizontal>(
-        4, jt::Vector2f { GP::GetScreenSize().x, 100.0f }, jt::Vector2f { 40.0f, 10.0f });
-    add(m_clouds);
-    
     m_vignette = std::make_shared<jt::Vignette>(GP::GetScreenSize());
     add(m_vignette);
 
@@ -134,6 +120,32 @@ void StateGame::onCreate()
     setAutoDraw(false);
 }
 
+void StateGame::createGrass()
+{
+    for (auto i = 0u; i != 80u; ++i) {
+        auto g = std::make_shared<jt::Animation>();
+        std::string name = "gras";
+        if (jt::Random::getChance(0.3f)) {
+            name = "flower";
+        }
+
+        if (jt::Random::getChance()) {
+            name += "1";
+        } else {
+            name += "2";
+        }
+        g->loadFromAseprite("assets/" + name + ".aseprite", textureManager());
+        g->play("idle");
+        if (strutil::contains(name, "gras")) {
+            auto const v = jt::Random::getInt(200, 230);
+            g->setColor(jt::Color(v, v, v));
+        }
+        g->setAnimationSpeedFactor(jt::Random::getFloat(0.7f, 1.2f));
+        g->setPosition(jt::Random::getRandomPointIn(jt::Rectf { 0.0f, 203.0f, 320.0f, 37.0f }));
+        m_grass.emplace_back(std::move(g));
+    }
+}
+
 void StateGame::onEnter() { }
 
 void StateGame::createPlayer()
@@ -182,6 +194,8 @@ void StateGame::onUpdate(float const elapsed)
         for (auto& g : m_grass) {
             g->update(elapsed);
         }
+
+        m_clouds->update(elapsed);
     }
 
     m_background->update(elapsed);
@@ -242,6 +256,7 @@ void StateGame::checkForSwingTargetHeight(float elapsed)
 void StateGame::onDraw() const
 {
     m_background->draw(renderTarget());
+    m_clouds->draw();
     for (auto& g : m_grass) {
         g->draw(renderTarget());
     }

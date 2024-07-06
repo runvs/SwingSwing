@@ -31,7 +31,7 @@ void jt::MarioCloudsHorizontal::doCreate()
 {
     for (auto i = 0u; i != m_numberOfClouds; ++i) {
         auto anim = std::make_shared<jt::Animation>();
-        anim->loadFromAseprite("assets/marioclouds.aseprite", textureManager());
+        anim->loadFromAseprite("assets/wolke.aseprite", textureManager());
         anim->play(anim->getRandomAnimationName());
         anim->setBlendMode(jt::BlendMode::ADD);
         anim->setColor(jt::Color { 255, 255, 255, 200 });
