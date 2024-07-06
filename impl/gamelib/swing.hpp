@@ -19,6 +19,7 @@ public:
     float getHeight() const;
 
     bool isInSwing() const;
+    bool getBreakMode() const;
 
 private:
     std::shared_ptr<jt::Box2DObject> m_physicsObjectSuspension;
@@ -29,7 +30,6 @@ private:
     bool m_isInBreakMode { false };
     bool m_isInSwing { false };
     float m_timeInSwingMode { 0.0f };
-    float m_timeSlowAndNearGround { 0.0f };
 
     void doCreate() override;
     void doUpdate(float const elapsed) override;

@@ -50,6 +50,11 @@ void Swing::doUpdate(float const elapsed)
     if (m_isInSwing) {
         m_timeInSwingMode += elapsed;
     }
+    if (m_timeInSwingMode >= 5.0f) {
+        enableBreakMode(true);
+        m_timeInSwingMode = 0.0f;
+    }
+
     auto v = m_physicsObjectSwing->getVelocity();
     auto const isNearGround = m_physicsObjectSwing->getPosition().y
         > GP::SwingSuspensionPosition().y + GP::SwingLength() * 0.95f;
@@ -64,7 +69,7 @@ void Swing::doUpdate(float const elapsed)
         if (m_isInSwing) {
             // switch back to non-breaking when velocity is slow enough
 
-            if (jt::MathHelper::lengthSquared(v) < 0.05f) {
+            if (jt::MathHelper::lengthSquared(v) < 0.025f) {
                 enableBreakMode(false);
                 if (m_timeInSwingMode >= 0.5f) {
                     m_isInSwing = false;
@@ -93,3 +98,5 @@ void Swing::enableBreakMode(bool enable) { m_isInBreakMode = enable; }
 float Swing::getHeight() const { return m_physicsObjectSwing->getPosition().y; }
 
 bool Swing::isInSwing() const { return m_isInSwing; }
+
+bool Swing::getBreakMode() const { return m_isInBreakMode; }

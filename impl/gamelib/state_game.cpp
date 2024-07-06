@@ -34,6 +34,7 @@ void StateGame::onCreate()
     setAutoDraw(false);
 
     m_swingPowerBar = std::make_shared<jt::Bar>(16, 128, false, textureManager());
+    m_expectedSwingTargetHeight = 35.0f;
 }
 
 void StateGame::onEnter() { }
@@ -50,10 +51,7 @@ void StateGame::onUpdate(float const elapsed)
 
         m_world->step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
-        if (getGame()->input().keyboard()->justPressed(jt::KeyCode::A)) {
-            m_score++;
-            m_hud->getObserverScoreP1()->notify(m_score);
-        }
+
         if (getGame()->input().keyboard()->pressed(jt::KeyCode::LShift)
             && getGame()->input().keyboard()->pressed(jt::KeyCode::Escape)) {
             endGame();
@@ -69,12 +67,7 @@ void StateGame::onUpdate(float const elapsed)
         }
 
         // Check Swing
-        // TODO dynamically set targetHeight - e.g. with allowed range
-        auto const targetHeight = 35.0f;
-        auto const hasReachedTarget = m_swing->getHeight() < targetHeight;
-        if (hasReachedTarget) {
-            m_swing->enableBreakMode(true);
-        }
+        checkForSwingTargetHeight();
 
         m_swingPowerBar->setCurrentValue(convertTimeToPower());
         m_swingPowerBar->setMaxValue(1.0f);
@@ -83,6 +76,23 @@ void StateGame::onUpdate(float const elapsed)
 
     m_background->update(elapsed);
     m_vignette->update(elapsed);
+}
+
+void StateGame::checkForSwingTargetHeight()
+{
+    if (!m_swing->isInSwing()) {
+        return;
+    }
+    if (m_swing->getBreakMode()) {
+        return;
+    }
+    auto const targetHeight = m_expectedSwingTargetHeight;
+    auto const hasReachedTarget = m_swing->getHeight() < targetHeight;
+    if (hasReachedTarget) {
+        m_swing->enableBreakMode(true);
+        m_score++;
+        m_hud->getObserverScoreP1()->notify(m_score);
+    }
 }
 
 void StateGame::onDraw() const

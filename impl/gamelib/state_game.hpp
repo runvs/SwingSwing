@@ -30,6 +30,8 @@ private:
 
     std::shared_ptr<Swing> m_swing;
 
+    float m_expectedSwingTargetHeight { 0.0f };
+
     bool m_running { true };
     bool m_hasEnded { false };
 
@@ -47,6 +49,7 @@ private:
     void triggerSwing();
 
     float convertTimeToPower();
+    void checkForSwingTargetHeight();
 };
 
 #endif
