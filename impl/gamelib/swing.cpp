@@ -34,12 +34,18 @@ void Swing::doCreate()
     m_shape = std::make_shared<jt::Shape>();
     m_shape->makeRect(jt::Vector2f { 16.0f, 16.0f }, textureManager());
     m_shape->setOrigin(jt::OriginMode::CENTER);
+
+    m_childAnimation = std::make_shared<jt::Animation>();
+    m_childAnimation->loadFromAseprite("assets/kind.aseprite", textureManager());
+    m_childAnimation->play("middle");
+    m_childAnimation->setLooping("right", false);
+    m_childAnimation->setLooping("left", false);
+    m_childAnimation->setOrigin(jt::OriginMode::CENTER);
 }
 
 void Swing::doUpdate(float const elapsed)
 {
     m_shape->setPosition(m_physicsObjectSwing->getPosition());
-    m_shape->setRotation(m_physicsObjectSwing->getRotation());
     m_shape->update(elapsed);
 
     if (m_isInBreakMode) {
@@ -49,6 +55,39 @@ void Swing::doUpdate(float const elapsed)
     }
     if (m_isInSwing) {
         m_timeInSwingMode += elapsed;
+
+        bool const isLeft = getPosition().x < GP::GetScreenSize().x / 2.0f;
+        bool const isRight = !isLeft;
+
+        if (m_childAnimation->getCurrentAnimationName() == "right") {
+            if (isRight) {
+                if (m_timeInSwingMode > 0.1f) {
+                    if (m_wasGoingUpLastFrame) {
+                        if (m_physicsObjectSwing->getVelocity().y > 0) {
+                            m_wasGoingUpLastFrame = false;
+                            m_childAnimation->play("left");
+                        }
+                    }
+                }
+            }
+        }
+        if (m_childAnimation->getCurrentAnimationName() == "left") {
+            if (isLeft) {
+                if (m_timeInSwingMode > 0.1f) {
+                    if (m_wasGoingUpLastFrame) {
+                        if (m_physicsObjectSwing->getVelocity().y > 0) {
+                            m_wasGoingUpLastFrame = false;
+                            m_childAnimation->play("right");
+                        }
+                    }
+                }
+            }
+        }
+        if (m_wasRightLastFrame != isRight) {
+            // crossed center
+            m_wasGoingUpLastFrame = true;
+        }
+        m_wasRightLastFrame = isRight;
     }
     if (m_timeInSwingMode >= 3.5f) {
         enableBreakMode(true);
@@ -73,13 +112,21 @@ void Swing::doUpdate(float const elapsed)
                 enableBreakMode(false);
                 if (m_timeInSwingMode >= 0.3f) {
                     m_isInSwing = false;
+                    m_childAnimation->play("middle");
                 }
             }
         }
     }
+
+    m_childAnimation->setPosition(m_physicsObjectSwing->getPosition());
+    m_childAnimation->update(elapsed);
 }
 
-void Swing::doDraw() const { m_shape->draw(renderTarget()); }
+void Swing::doDraw() const
+{
+    m_shape->draw(renderTarget());
+    m_childAnimation->draw(renderTarget());
+}
 
 void Swing::doKill() { }
 
@@ -91,6 +138,8 @@ void Swing::trigger(float strength)
         jt::Vector2f { GP::SwingForceScalingFactor() * strength, 0.0f });
     m_isInSwing = true;
     m_timeInSwingMode = 0.0f;
+    m_childAnimation->play("right");
+    m_wasGoingUpLastFrame = true;
 }
 
 void Swing::enableBreakMode(bool enable) { m_isInBreakMode = enable; }

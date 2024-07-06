@@ -1,6 +1,7 @@
 #ifndef SWINGSWING_SWING_HPP
 #define SWINGSWING_SWING_HPP
 
+#include "animation.hpp"
 #include "box2dwrapper/box2d_joint.hpp"
 #include "box2dwrapper/box2d_object.hpp"
 #include "shape.hpp"
@@ -26,11 +27,15 @@ private:
     std::shared_ptr<jt::Box2DObject> m_physicsObjectSuspension;
     std::shared_ptr<jt::Box2DObject> m_physicsObjectSwing;
     std::shared_ptr<jt::Shape> m_shape;
+    std::shared_ptr<jt::Animation> m_childAnimation;
     std::shared_ptr<jt::Box2DJoint> m_joint;
 
     bool m_isInBreakMode { false };
     bool m_isInSwing { false };
     float m_timeInSwingMode { 0.0f };
+
+    bool m_wasGoingUpLastFrame { true };
+    bool m_wasRightLastFrame { false };
 
     void doCreate() override;
     void doUpdate(float const elapsed) override;
