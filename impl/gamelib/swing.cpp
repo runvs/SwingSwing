@@ -151,7 +151,7 @@ void Swing::doUpdate(float const elapsed)
 
 void Swing::doDraw() const
 {
-    m_shape->draw(renderTarget());
+    //    m_shape->draw(renderTarget());
     m_childAnimation->draw(renderTarget());
 }
 

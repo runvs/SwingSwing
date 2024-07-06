@@ -42,7 +42,7 @@ jt::Vector2f GP::SwingSuspensionPosition()
     return GetScreenSize() * 0.5 + jt::Vector2f { 0.0f, -48.0f };
 }
 
-float GP::SwingLength() { return 96.0f; }
+float GP::SwingLength() { return 128.0f; }
 
 float GP::SwingForceScalingFactor() { return 80000.0f; }
 

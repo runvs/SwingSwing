@@ -15,21 +15,47 @@ void StateGame::onCreate()
 {
     m_world = std::make_shared<jt::Box2DWorldImpl>(jt::Vector2f { 0.0f, 200.0f });
 
-    float const w = static_cast<float>(GP::GetWindowSize().x);
-    float const h = static_cast<float>(GP::GetWindowSize().y);
-
     using jt::Shape;
 
-    m_background = std::make_shared<Shape>();
-    m_background->makeRect({ w, h }, textureManager());
-    m_background->setColor(GP::PaletteBackground());
+    m_background = std::make_shared<jt::Sprite>("assets/background.aseprite", textureManager());
     m_background->setIgnoreCamMovement(true);
     m_background->update(0.0f);
 
+    m_schaukelBack
+        = std::make_shared<jt::Sprite>("assets/schaukel_hinten.aseprite", textureManager());
+    m_schaukelBack->update(0.0f);
+
+    m_schaukelFront
+        = std::make_shared<jt::Sprite>("assets/schaukel_vorne.aseprite", textureManager());
+    m_schaukelFront->update(0.0f);
+
+    for (auto i = 0u; i != 80u; ++i) {
+        auto g = std::make_shared<jt::Animation>();
+        std::string name = "gras";
+        if (jt::Random::getChance()) {
+            name = "flower";
+        }
+        if (jt::Random::getChance()) {
+            name += "1";
+        } else {
+            name += "2";
+        }
+        g->loadFromAseprite("assets/" + name + ".aseprite", textureManager());
+        g->play("idle");
+        g->setAnimationSpeedFactor(jt::Random::getFloat(0.7f, 1.2f));
+        g->setPosition(jt::Random::getRandomPointIn(jt::Rectf { 0.0f, 206.0f, 320.0f, 34.0f }));
+        m_grass.emplace_back(std::move(g));
+    }
+
     createPlayer();
 
+    m_clouds = std::make_shared<jt::MarioCloudsHorizontal>(
+        4, jt::Vector2f { GP::GetScreenSize().x, 100.0f }, jt::Vector2f { 40.0f, 10.0f });
+    add(m_clouds);
+    
     m_vignette = std::make_shared<jt::Vignette>(GP::GetScreenSize());
     add(m_vignette);
+
     m_hud = std::make_shared<Hud>();
     add(m_hud);
 
@@ -153,6 +179,9 @@ void StateGame::onUpdate(float const elapsed)
         m_swingPowerBar->setCurrentValue(convertTimeToPower());
         m_swingPowerBar->setMaxValue(1.0f);
         m_swingPowerBar->update(elapsed);
+        for (auto& g : m_grass) {
+            g->update(elapsed);
+        }
     }
 
     m_background->update(elapsed);
@@ -213,7 +242,14 @@ void StateGame::checkForSwingTargetHeight(float elapsed)
 void StateGame::onDraw() const
 {
     m_background->draw(renderTarget());
+    for (auto& g : m_grass) {
+        g->draw(renderTarget());
+    }
+    m_schaukelBack->draw(renderTarget());
+
     drawObjects();
+
+    m_schaukelFront->draw(renderTarget());
 
     m_targetLineLower->draw(renderTarget());
     m_targetLineUpper->draw(renderTarget());
