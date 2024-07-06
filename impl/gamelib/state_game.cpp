@@ -232,7 +232,7 @@ void StateGame::checkForSwingTargetHeight(float elapsed)
                 m_swing->enableBreakMode(true);
                 m_swingTargetTimeSinceReachedLower = 0.0f;
 
-                auto failSound = getGame()->audio().addTemporarySound("event:/fail");
+                auto failSound = getGame()->audio().addTemporarySound("event:/miss-event");
                 failSound->play();
             }
         } else {
