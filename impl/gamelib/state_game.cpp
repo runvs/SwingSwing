@@ -46,7 +46,7 @@ void StateGame::onCreate()
         return shape;
     };
 
-    m_targetLineParticlesLower = jt::ParticleSystem<jt::Shape, 100>::createPS(
+    m_targetLineParticlesLower = ParticleSystemType::createPS(
         spawnParticle, [this](auto& particle, jt::Vector2f const& /*pos*/) {
             auto const startPos = jt::Vector2f { 0.0f, m_swingTargetHeightLower }
                 + jt::Random::getRandomPointIn(jt::Vector2f { GP::GetScreenSize().x, 1.0f });
@@ -66,7 +66,7 @@ void StateGame::onCreate()
         });
     add(m_targetLineParticlesLower);
 
-    m_targetLineParticlesUpper = jt::ParticleSystem<jt::Shape, 100>::createPS(
+    m_targetLineParticlesUpper = ParticleSystemType::createPS(
         spawnParticle, [this](auto& particle, jt::Vector2f const& /*pos*/) {
             auto const startPos = jt::Vector2f { 0.0f, m_swingTargetHeightUpper }
                 + jt::Random::getRandomPointIn(jt::Vector2f { GP::GetScreenSize().x, 1.0f });
@@ -84,6 +84,25 @@ void StateGame::onCreate()
             add(twa);
         });
     add(m_targetLineParticlesUpper);
+
+    m_swingParticles = ParticleSystemType::createPS(
+        spawnParticle, [this](auto& particle, jt::Vector2f const& pos) {
+            auto const startPos
+                = pos + jt::Random::getRandomPointIn(jt::Rectf { -8.0f, -8.0f, 16.0f, 16.0f });
+            particle->setPosition(startPos);
+
+            auto const endPos = startPos + jt::Random::getRandomPointInCircle(48);
+
+            float const totalTime = 1.0f;
+
+            add(jt::TweenPosition::create(particle, totalTime, startPos, endPos));
+
+            std::shared_ptr<jt::Tween> twa = jt::TweenAlpha::create(
+                particle, totalTime * 0.75f, jt::Random::getInt(150, 200), 0);
+            twa->setStartDelay(totalTime * 0.25f);
+            add(twa);
+        });
+    add(m_swingParticles);
 
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
@@ -140,6 +159,7 @@ void StateGame::onUpdate(float const elapsed)
     m_vignette->update(elapsed);
     m_targetLineParticlesLower->update(elapsed);
     m_targetLineParticlesUpper->update(elapsed);
+    m_swingParticles->update(elapsed);
 }
 
 void StateGame::updateTargetLine(float const elapsed) const
@@ -166,13 +186,19 @@ void StateGame::checkForSwingTargetHeight(float elapsed)
         if (m_swingTargetTimeSinceReachedLower < 0.75f) {
             auto const hasReachedUpperTarget = m_swing->getHeight() < m_swingTargetHeightUpper;
             if (hasReachedUpperTarget) {
+                // fail
                 m_swing->enableBreakMode(true);
                 m_swingTargetTimeSinceReachedLower = 0.0f;
             }
         } else {
+            // succeed
             m_score++;
             m_hud->getObserverScoreP1()->notify(m_score);
+
+            m_swingParticles->fire(100, m_swing->getPosition());
             m_swingTargetTimeSinceReachedLower = 0.0f;
+
+            m_swing->enableBreakMode(true);
         }
     }
 }
@@ -181,7 +207,6 @@ void StateGame::onDraw() const
 {
     m_background->draw(renderTarget());
     drawObjects();
-    m_targetLineParticlesLower->draw();
 
     m_targetLineLower->draw(renderTarget());
     m_targetLineUpper->draw(renderTarget());

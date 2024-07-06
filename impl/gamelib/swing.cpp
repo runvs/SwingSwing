@@ -50,7 +50,7 @@ void Swing::doUpdate(float const elapsed)
     if (m_isInSwing) {
         m_timeInSwingMode += elapsed;
     }
-    if (m_timeInSwingMode >= 5.0f) {
+    if (m_timeInSwingMode >= 3.5f) {
         enableBreakMode(true);
         m_timeInSwingMode = 0.0f;
     }
@@ -71,7 +71,7 @@ void Swing::doUpdate(float const elapsed)
 
             if (jt::MathHelper::lengthSquared(v) < 0.025f) {
                 enableBreakMode(false);
-                if (m_timeInSwingMode >= 0.5f) {
+                if (m_timeInSwingMode >= 0.3f) {
                     m_isInSwing = false;
                 }
             }
@@ -100,3 +100,5 @@ float Swing::getHeight() const { return m_physicsObjectSwing->getPosition().y; }
 bool Swing::isInSwing() const { return m_isInSwing; }
 
 bool Swing::getBreakMode() const { return m_isInBreakMode; }
+
+jt::Vector2f Swing::getPosition() const { return m_physicsObjectSwing->getPosition(); }

@@ -20,6 +20,7 @@ public:
 
     bool isInSwing() const;
     bool getBreakMode() const;
+    jt::Vector2f getPosition() const;
 
 private:
     std::shared_ptr<jt::Box2DObject> m_physicsObjectSuspension;
