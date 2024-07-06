@@ -40,6 +40,8 @@ void Swing::doCreate()
     m_childAnimation->play("middle");
     m_childAnimation->setLooping("right", false);
     m_childAnimation->setLooping("left", false);
+    m_childAnimation->setLooping("reverse-right", false);
+    m_childAnimation->setLooping("reverse-left", false);
     m_childAnimation->setOrigin(jt::OriginMode::CENTER);
 }
 
@@ -102,6 +104,14 @@ void Swing::doUpdate(float const elapsed)
         if (m_isInBreakMode) {
             m_shape->setColor(jt::Color { 255, 0, 0 });
             v = v * GP::SwingGroundBrakingFactor();
+
+            if (m_childAnimation->getCurrentAnimationName() == "right") {
+                m_childAnimation->play("reverse-right");
+            }
+            if (m_childAnimation->getCurrentAnimationName() == "left") {
+                m_childAnimation->play("reverse-left");
+            }
+
             m_physicsObjectSwing->setVelocity(v);
         }
 

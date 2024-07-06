@@ -36,6 +36,7 @@ private:
 
     bool m_wasGoingUpLastFrame { true };
     bool m_wasRightLastFrame { false };
+    bool m_isBreaking { false };
 
     void doCreate() override;
     void doUpdate(float const elapsed) override;
