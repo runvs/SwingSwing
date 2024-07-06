@@ -2,6 +2,7 @@
 #define GAME_STATE_GAME_HPP
 
 #include "bar.hpp"
+#include "line.hpp"
 #include "swing.hpp"
 #include <box2dwrapper/box2d_world_interface.hpp>
 #include <game_state.hpp>
@@ -27,6 +28,7 @@ private:
     std::shared_ptr<Hud> m_hud;
     std::shared_ptr<jt::Box2DWorldInterface> m_world { nullptr };
     std::shared_ptr<jt::Bar> m_swingPowerBar { nullptr };
+    std::shared_ptr<jt::Line> m_targetLine { nullptr };
 
     std::shared_ptr<Swing> m_swing;
 

@@ -30,11 +30,13 @@ void StateGame::onCreate()
     m_hud = std::make_shared<Hud>();
     add(m_hud);
 
-    // StateGame will call drawObjects itself.
-    setAutoDraw(false);
-
     m_swingPowerBar = std::make_shared<jt::Bar>(16, 128, false, textureManager());
     m_expectedSwingTargetHeight = 35.0f;
+
+    m_targetLine = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
+
+    // StateGame will call drawObjects itself.
+    setAutoDraw(false);
 }
 
 void StateGame::onEnter() { }
@@ -51,6 +53,9 @@ void StateGame::onUpdate(float const elapsed)
 
         m_world->step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
+
+        m_targetLine->setPosition(jt::Vector2f { 0.0f, m_expectedSwingTargetHeight });
+        m_targetLine->update(elapsed);
 
         if (getGame()->input().keyboard()->pressed(jt::KeyCode::LShift)
             && getGame()->input().keyboard()->pressed(jt::KeyCode::Escape)) {
@@ -99,10 +104,13 @@ void StateGame::onDraw() const
 {
     m_background->draw(renderTarget());
     drawObjects();
+
+    m_targetLine->draw(renderTarget());
     m_vignette->draw();
     if (!m_swing->isInSwing()) {
         m_swingPowerBar->draw(renderTarget());
     }
+
     m_hud->draw();
 }
 
