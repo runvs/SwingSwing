@@ -100,10 +100,20 @@ void Swing::doUpdate(float const elapsed)
     auto const isNearGround = m_physicsObjectSwing->getPosition().y
         > GP::SwingSuspensionPosition().y + GP::SwingLength() * 0.95f;
 
+    auto const isNearBottomGround = m_physicsObjectSwing->getPosition().y
+        > GP::SwingSuspensionPosition().y + GP::SwingLength() * 0.99f;
+
     if (isNearGround) {
+        auto l2 = jt::MathHelper::lengthSquared(v);
+        //        std::cout << l2 << std::endl;
+        if (l2 < 200.0f) {
+            v = v * GP::SwingGroundBrakingFactor();
+            m_physicsObjectSwing->setVelocity(v);
+        }
         if (m_isInBreakMode) {
             m_shape->setColor(jt::Color { 255, 0, 0 });
             v = v * GP::SwingGroundBrakingFactor();
+            if (isNearBottomGround) { }
 
             if (m_childAnimation->getCurrentAnimationName() == "right") {
                 m_childAnimation->play("reverse-right");
@@ -118,7 +128,8 @@ void Swing::doUpdate(float const elapsed)
         if (m_isInSwing) {
             // switch back to non-breaking when velocity is slow enough
 
-            if (jt::MathHelper::lengthSquared(v) < 0.025f) {
+            if (jt::MathHelper::lengthSquared(v) < 0.03f) {
+
                 enableBreakMode(false);
                 if (m_timeInSwingMode >= 0.3f) {
                     m_isInSwing = false;

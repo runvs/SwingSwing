@@ -46,4 +46,4 @@ float GP::SwingLength() { return 96.0f; }
 
 float GP::SwingForceScalingFactor() { return 80000.0f; }
 
-float GP::SwingGroundBrakingFactor() { return 0.985f; }
+float GP::SwingGroundBrakingFactor() { return 0.99f; }

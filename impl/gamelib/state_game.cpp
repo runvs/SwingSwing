@@ -34,8 +34,8 @@ void StateGame::onCreate()
     add(m_hud);
 
     m_swingPowerBar = std::make_shared<jt::Bar>(16, 128, false, textureManager());
-    m_swingTargetHeightLower = 60.0f;
-    m_swingTargetHeightUpper = 16.0f;
+
+    createNewTarget();
 
     m_targetLineLower = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
     m_targetLineUpper = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
@@ -203,6 +203,7 @@ void StateGame::checkForSwingTargetHeight(float elapsed)
 
             m_swing->enableBreakMode(true);
 
+            createNewTarget();
             auto successSound = getGame()->audio().addTemporarySound("event:/success");
             successSound->play();
         }
@@ -252,4 +253,25 @@ float StateGame::convertTimeToPower()
     constexpr float freq = 0.75f;
     float t = m_spacePressedTimer;
     return 2.0f * abs(t * freq - std::floor(t * freq + 0.5f));
+}
+
+void StateGame::createNewTarget()
+{
+    float newVal = jt::Random::getFloat(getCurrentWidth(), 150);
+    int numberOfTries = 0;
+    while (abs(newVal - m_swingTargetHeightLower) < 10) {
+        numberOfTries += 1;
+        newVal = jt::Random::getFloat(getCurrentWidth(), 150);
+        if (numberOfTries > 10)
+            break;
+    }
+    m_swingTargetHeightLower = newVal;
+    m_swingTargetHeightUpper = m_swingTargetHeightLower - getCurrentWidth();
+}
+
+float StateGame::getCurrentWidth()
+{
+    float v = 64.0f - 3.0f * m_score;
+
+    return std::clamp(v, 4.0f, v);
 }

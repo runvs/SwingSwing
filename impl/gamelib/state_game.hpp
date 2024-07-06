@@ -64,6 +64,9 @@ private:
     float convertTimeToPower();
     void checkForSwingTargetHeight(float elapsed);
     void updateTargetLine(float const elapsed) const;
+
+    void createNewTarget();
+    float getCurrentWidth();
 };
 
 #endif
