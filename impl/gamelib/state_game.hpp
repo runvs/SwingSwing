@@ -3,6 +3,7 @@
 
 #include "bar.hpp"
 #include "line.hpp"
+#include "particle_system.hpp"
 #include "swing.hpp"
 #include <box2dwrapper/box2d_world_interface.hpp>
 #include <game_state.hpp>
@@ -27,12 +28,20 @@ private:
     std::shared_ptr<jt::Vignette> m_vignette;
     std::shared_ptr<Hud> m_hud;
     std::shared_ptr<jt::Box2DWorldInterface> m_world { nullptr };
-    std::shared_ptr<jt::Bar> m_swingPowerBar { nullptr };
-    std::shared_ptr<jt::Line> m_targetLine { nullptr };
 
+    std::shared_ptr<jt::Bar> m_swingPowerBar { nullptr };
     std::shared_ptr<Swing> m_swing;
 
-    float m_expectedSwingTargetHeight { 0.0f };
+    std::shared_ptr<jt::Line> m_targetLineLower { nullptr };
+    std::shared_ptr<jt::Line> m_targetLineUpper { nullptr };
+    std::shared_ptr<jt::ParticleSystem<jt::Shape, 100>> m_targetLineParticlesLower;
+    std::shared_ptr<jt::ParticleSystem<jt::Shape, 100>> m_targetLineParticlesUpper;
+    float m_swingTargetHeightLower { 0.0f };
+    float m_swingTargetHeightUpper { 0.0f };
+
+    float m_swingTargetTimeSinceReachedLower { 0.0f };
+
+    float m_targetLineParticlesTimer { 0.0f };
 
     bool m_running { true };
     bool m_hasEnded { false };
@@ -51,7 +60,8 @@ private:
     void triggerSwing();
 
     float convertTimeToPower();
-    void checkForSwingTargetHeight();
+    void checkForSwingTargetHeight(float elapsed);
+    void updateTargetLine(float const elapsed) const;
 };
 
 #endif

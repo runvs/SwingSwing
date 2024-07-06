@@ -1,4 +1,7 @@
 ﻿#include "state_game.hpp"
+#include "random/random.hpp"
+#include "tweens/tween_alpha.hpp"
+#include "tweens/tween_position.hpp"
 #include <box2dwrapper/box2d_world_impl.hpp>
 #include <color/color.hpp>
 #include <game_interface.hpp>
@@ -31,9 +34,56 @@ void StateGame::onCreate()
     add(m_hud);
 
     m_swingPowerBar = std::make_shared<jt::Bar>(16, 128, false, textureManager());
-    m_expectedSwingTargetHeight = 35.0f;
+    m_swingTargetHeightLower = 60.0f;
+    m_swingTargetHeightUpper = 16.0f;
 
-    m_targetLine = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
+    m_targetLineLower = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
+    m_targetLineUpper = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
+
+    auto spawnParticle = [this]() {
+        auto shape = std::make_shared<jt::Shape>();
+        shape->makeRect(jt::Vector2f { 1.0f, 1.0f }, textureManager());
+        return shape;
+    };
+
+    m_targetLineParticlesLower = jt::ParticleSystem<jt::Shape, 100>::createPS(
+        spawnParticle, [this](auto& particle, jt::Vector2f const& /*pos*/) {
+            auto const startPos = jt::Vector2f { 0.0f, m_swingTargetHeightLower }
+                + jt::Random::getRandomPointIn(jt::Vector2f { GP::GetScreenSize().x, 1.0f });
+            particle->setPosition(startPos);
+
+            float const totalTime = 1.5f;
+
+            jt::Vector2f endPos
+                = startPos + jt::Vector2f { 0.0f, -16.0f * jt::Random::getFloat(0.4f, 1.0f) };
+            endPos.y = std::clamp(endPos.y, m_swingTargetHeightUpper, m_swingTargetHeightLower);
+            add(jt::TweenPosition::create(particle, totalTime, startPos, endPos));
+
+            std::shared_ptr<jt::Tween> twa = jt::TweenAlpha::create(
+                particle, totalTime * 0.75f, jt::Random::getInt(150, 200), 0);
+            twa->setStartDelay(totalTime * 0.25f);
+            add(twa);
+        });
+    add(m_targetLineParticlesLower);
+
+    m_targetLineParticlesUpper = jt::ParticleSystem<jt::Shape, 100>::createPS(
+        spawnParticle, [this](auto& particle, jt::Vector2f const& /*pos*/) {
+            auto const startPos = jt::Vector2f { 0.0f, m_swingTargetHeightUpper }
+                + jt::Random::getRandomPointIn(jt::Vector2f { GP::GetScreenSize().x, 1.0f });
+            particle->setPosition(startPos);
+
+            float const totalTime = 1.5f;
+            jt::Vector2f endPos
+                = startPos + jt::Vector2f { 0.0f, 16.0f * jt::Random::getFloat(0.4f, 1.0f) };
+            endPos.y = std::clamp(endPos.y, m_swingTargetHeightUpper, m_swingTargetHeightLower);
+            add(jt::TweenPosition::create(particle, totalTime, startPos, endPos));
+
+            std::shared_ptr<jt::Tween> twa = jt::TweenAlpha::create(
+                particle, totalTime * 0.75f, jt::Random::getInt(150, 200), 0);
+            twa->setStartDelay(totalTime * 0.25f);
+            add(twa);
+        });
+    add(m_targetLineParticlesUpper);
 
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
@@ -54,8 +104,15 @@ void StateGame::onUpdate(float const elapsed)
         m_world->step(elapsed, GP::PhysicVelocityIterations(), GP::PhysicPositionIterations());
         // update game logic here
 
-        m_targetLine->setPosition(jt::Vector2f { 0.0f, m_expectedSwingTargetHeight });
-        m_targetLine->update(elapsed);
+        updateTargetLine(elapsed);
+
+        m_targetLineParticlesTimer += elapsed;
+        constexpr auto timerMax = 0.1f;
+        while (m_targetLineParticlesTimer > timerMax) {
+            m_targetLineParticlesLower->fire(1);
+            m_targetLineParticlesUpper->fire(1);
+            m_targetLineParticlesTimer -= timerMax;
+        }
 
         if (getGame()->input().keyboard()->pressed(jt::KeyCode::LShift)
             && getGame()->input().keyboard()->pressed(jt::KeyCode::Escape)) {
@@ -72,7 +129,7 @@ void StateGame::onUpdate(float const elapsed)
         }
 
         // Check Swing
-        checkForSwingTargetHeight();
+        checkForSwingTargetHeight(elapsed);
 
         m_swingPowerBar->setCurrentValue(convertTimeToPower());
         m_swingPowerBar->setMaxValue(1.0f);
@@ -81,9 +138,20 @@ void StateGame::onUpdate(float const elapsed)
 
     m_background->update(elapsed);
     m_vignette->update(elapsed);
+    m_targetLineParticlesLower->update(elapsed);
+    m_targetLineParticlesUpper->update(elapsed);
 }
 
-void StateGame::checkForSwingTargetHeight()
+void StateGame::updateTargetLine(float const elapsed) const
+{
+    m_targetLineLower->setPosition(jt::Vector2f { 0.0f, m_swingTargetHeightLower });
+    m_targetLineLower->update(elapsed);
+
+    m_targetLineUpper->setPosition(jt::Vector2f { 0.0f, m_swingTargetHeightUpper });
+    m_targetLineUpper->update(elapsed);
+}
+
+void StateGame::checkForSwingTargetHeight(float elapsed)
 {
     if (!m_swing->isInSwing()) {
         return;
@@ -91,12 +159,21 @@ void StateGame::checkForSwingTargetHeight()
     if (m_swing->getBreakMode()) {
         return;
     }
-    auto const targetHeight = m_expectedSwingTargetHeight;
-    auto const hasReachedTarget = m_swing->getHeight() < targetHeight;
-    if (hasReachedTarget) {
-        m_swing->enableBreakMode(true);
-        m_score++;
-        m_hud->getObserverScoreP1()->notify(m_score);
+    auto const hasReachedLowerTarget = m_swing->getHeight() < m_swingTargetHeightLower;
+    if (hasReachedLowerTarget) {
+        m_swingTargetTimeSinceReachedLower += elapsed;
+
+        if (m_swingTargetTimeSinceReachedLower < 0.75f) {
+            auto const hasReachedUpperTarget = m_swing->getHeight() < m_swingTargetHeightUpper;
+            if (hasReachedUpperTarget) {
+                m_swing->enableBreakMode(true);
+                m_swingTargetTimeSinceReachedLower = 0.0f;
+            }
+        } else {
+            m_score++;
+            m_hud->getObserverScoreP1()->notify(m_score);
+            m_swingTargetTimeSinceReachedLower = 0.0f;
+        }
     }
 }
 
@@ -104,8 +181,10 @@ void StateGame::onDraw() const
 {
     m_background->draw(renderTarget());
     drawObjects();
+    m_targetLineParticlesLower->draw();
 
-    m_targetLine->draw(renderTarget());
+    m_targetLineLower->draw(renderTarget());
+    m_targetLineUpper->draw(renderTarget());
     m_vignette->draw();
     if (!m_swing->isInSwing()) {
         m_swingPowerBar->draw(renderTarget());
