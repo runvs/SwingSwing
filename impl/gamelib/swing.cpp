@@ -1,6 +1,7 @@
 #include "swing.hpp"
 #include <game_interface.hpp>
 #include <game_properties.hpp>
+#include <math_helper.hpp>
 
 void Swing::doCreate()
 {
@@ -14,6 +15,27 @@ void Swing::doUpdate(float const elapsed)
     m_shape->setPosition(m_physicsObject->getPosition());
     m_shape->setRotation(m_physicsObject->getRotation());
     m_shape->update(elapsed);
+
+    // TODO check for target position
+    auto const hasReachedTarget = m_physicsObject->getPosition().y < 35;
+    if (hasReachedTarget)
+        enableBreakMode(true);
+
+    if (m_isInBreakMode) {
+        auto v = m_physicsObject->getVelocity();
+        auto const isNearGround = m_physicsObject->getPosition().y > 170;
+        if (isNearGround) {
+            // break;
+            v = v * 0.99f;
+            m_physicsObject->setVelocity(v);
+
+            // switch back to non-breaking when velocity is slow enough
+            if (jt::MathHelper::lengthSquared(v) < 0.01f) {
+                m_physicsObject->setVelocity({ 0.0f, 0.0 });
+                enableBreakMode(false);
+            }
+        }
+    }
 }
 
 void Swing::doDraw() const { m_shape->draw(renderTarget()); }
@@ -35,7 +57,7 @@ Swing::Swing(std::shared_ptr<jt::Box2DWorldInterface> world)
     bodyDef.type = b2BodyType::b2_dynamicBody;
     bodyDef.fixedRotation = false;
     bodyDef.angularDamping = 0.0f;
-    bodyDef.linearDamping = 0.2f;
+    bodyDef.linearDamping = GP::SwingDampingNormal();
     m_physicsObject = std::make_shared<jt::Box2DObject>(world, &bodyDef);
 
     b2DistanceJointDef jointDev;
@@ -51,4 +73,14 @@ Swing::Swing(std::shared_ptr<jt::Box2DWorldInterface> world)
 void Swing::trigger(float strength)
 {
     m_physicsObject->addForceToCenter(jt::Vector2f { 40000.0f * strength, 0.0f });
+}
+
+void Swing::enableBreakMode(bool enable)
+{
+    m_isInBreakMode = enable;
+    //    if (m_isInBreakMode) {
+    //        m_physicsObject->getB2Body()->SetLinearDamping(GP::SwingDampingNormal());
+    //    } else {
+    //        m_physicsObject->getB2Body()->SetLinearDamping(GP::SwingDampingWhenBreaking());
+    //    }
 }

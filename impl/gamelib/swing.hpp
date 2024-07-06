@@ -14,11 +14,15 @@ public:
 
     void trigger(float strength);
 
+    void enableBreakMode(bool enable);
+
 private:
     std::shared_ptr<jt::Box2DObject> m_physicsObjectSuspension;
     std::shared_ptr<jt::Box2DObject> m_physicsObject;
     std::shared_ptr<jt::Shape> m_shape;
     std::shared_ptr<jt::Box2DJoint> m_joint;
+
+    bool m_isInBreakMode { false };
 
     void doCreate() override;
     void doUpdate(float const elapsed) override;
