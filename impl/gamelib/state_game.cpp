@@ -183,7 +183,7 @@ void StateGame::checkForSwingTargetHeight(float elapsed)
     if (hasReachedLowerTarget) {
         m_swingTargetTimeSinceReachedLower += elapsed;
 
-        if (m_swingTargetTimeSinceReachedLower < 0.75f) {
+        if (m_swingTargetTimeSinceReachedLower < 0.5f) {
             auto const hasReachedUpperTarget = m_swing->getHeight() < m_swingTargetHeightUpper;
             if (hasReachedUpperTarget) {
                 // fail
