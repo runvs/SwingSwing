@@ -43,8 +43,11 @@ void StateGame::onCreate()
     m_hud = std::make_shared<Hud>();
     add(m_hud);
 
-    m_swingPowerBar = std::make_shared<jt::Bar>(16, 128, false, textureManager());
-
+    m_swingPowerBar = std::make_shared<jt::Bar>(12, 100, false, textureManager());
+    m_swingPowerBar->setPosition({ 4, 136 });
+    auto c = m_swingPowerBar->getBackColor();
+    c.a = 180;
+    m_swingPowerBar->setBackColor(c);
     createNewTarget();
 
     m_targetLineLower = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
