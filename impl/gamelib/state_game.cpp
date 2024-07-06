@@ -137,7 +137,8 @@ void StateGame::createGrass()
         g->play("idle");
         if (strutil::contains(name, "gras")) {
             auto const v = jt::Random::getInt(200, 230);
-            g->setColor(jt::Color(v, v, v));
+            g->setColor(jt::Color { static_cast<std::uint8_t>(v), static_cast<std::uint8_t>(v),
+                static_cast<std::uint8_t>(v) });
         }
         g->setAnimationSpeedFactor(jt::Random::getFloat(0.7f, 1.2f));
         g->setPosition(jt::Random::getRandomPointIn(jt::Rectf { 0.0f, 203.0f, 320.0f, 37.0f }));
