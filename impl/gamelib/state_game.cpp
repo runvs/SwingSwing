@@ -66,6 +66,14 @@ void StateGame::onUpdate(float const elapsed)
             triggerSwing();
         }
 
+        // Check Swing
+        // TODO dynamically set targetHeight - e.g. with allowed range
+        auto const targetHeight = 35.0f;
+        auto const hasReachedTarget = m_swing->getHeight() < targetHeight;
+        if (hasReachedTarget) {
+            m_swing->enableBreakMode(true);
+        }
+
         m_bar->setCurrentValue(convertTimeToPower());
         m_bar->setMaxValue(1.0f);
         m_bar->update(elapsed);

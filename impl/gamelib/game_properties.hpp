@@ -45,6 +45,11 @@ public:
     static int PhysicPositionIterations();
 
     static float SwingDampingNormal();
+
+    static jt::Vector2f SwingSuspensionPosition();
+    static float SwingLength();
+    static float SwingForceScalingFactor();
+    static float SwingGroundBrakingFactor();
 };
 
 #endif

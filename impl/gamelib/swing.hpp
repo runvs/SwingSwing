@@ -16,9 +16,11 @@ public:
 
     void enableBreakMode(bool enable);
 
+    float getHeight() const;
+
 private:
     std::shared_ptr<jt::Box2DObject> m_physicsObjectSuspension;
-    std::shared_ptr<jt::Box2DObject> m_physicsObject;
+    std::shared_ptr<jt::Box2DObject> m_physicsObjectSwing;
     std::shared_ptr<jt::Shape> m_shape;
     std::shared_ptr<jt::Box2DJoint> m_joint;
 

@@ -36,3 +36,14 @@ int GP::PhysicVelocityIterations() { return 20; }
 int GP::PhysicPositionIterations() { return 20; }
 
 float GP::SwingDampingNormal() { return 0.2f; }
+
+jt::Vector2f GP::SwingSuspensionPosition()
+{
+    return GetScreenSize() * 0.5 + jt::Vector2f { 0.0f, -48.0f };
+}
+
+float GP::SwingLength() { return 96.0f; }
+
+float GP::SwingForceScalingFactor() { return 80000.0f; }
+
+float GP::SwingGroundBrakingFactor() { return 0.985f; }

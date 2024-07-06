@@ -3,6 +3,32 @@
 #include <game_properties.hpp>
 #include <math_helper.hpp>
 
+Swing::Swing(std::shared_ptr<jt::Box2DWorldInterface> world)
+{
+    b2BodyDef suspensionBodyDef;
+    suspensionBodyDef.type = b2BodyType::b2_staticBody;
+    suspensionBodyDef.position = jt::Conversion::vec(GP::SwingSuspensionPosition());
+    m_physicsObjectSuspension = std::make_shared<jt::Box2DObject>(world, &suspensionBodyDef);
+
+    b2BodyDef bodyDef;
+    bodyDef.position = jt::Conversion::vec(
+        GP::SwingSuspensionPosition() + jt::Vector2f { 0.0f, GP::SwingLength() });
+    bodyDef.type = b2BodyType::b2_dynamicBody;
+    bodyDef.fixedRotation = false;
+    bodyDef.angularDamping = 0.0f;
+    bodyDef.linearDamping = GP::SwingDampingNormal();
+    m_physicsObjectSwing = std::make_shared<jt::Box2DObject>(world, &bodyDef);
+
+    b2DistanceJointDef jointDev;
+    jointDev.bodyA = m_physicsObjectSwing->getB2Body();
+    jointDev.bodyB = m_physicsObjectSuspension->getB2Body();
+    jointDev.collideConnected = false;
+    jointDev.length = GP::SwingLength();
+
+    jointDev.dampingRatio = 0.8f;
+    m_joint = std::make_shared<jt::Box2DJoint>(world, &jointDev);
+}
+
 void Swing::doCreate()
 {
     m_shape = std::make_shared<jt::Shape>();
@@ -12,26 +38,22 @@ void Swing::doCreate()
 
 void Swing::doUpdate(float const elapsed)
 {
-    m_shape->setPosition(m_physicsObject->getPosition());
-    m_shape->setRotation(m_physicsObject->getRotation());
+    m_shape->setPosition(m_physicsObjectSwing->getPosition());
+    m_shape->setRotation(m_physicsObjectSwing->getRotation());
     m_shape->update(elapsed);
 
-    // TODO check for target position
-    auto const hasReachedTarget = m_physicsObject->getPosition().y < 35;
-    if (hasReachedTarget)
-        enableBreakMode(true);
-
     if (m_isInBreakMode) {
-        auto v = m_physicsObject->getVelocity();
-        auto const isNearGround = m_physicsObject->getPosition().y > 170;
+        auto v = m_physicsObjectSwing->getVelocity();
+        auto const isNearGround = m_physicsObjectSwing->getPosition().y
+            > GP::SwingSuspensionPosition().y + GP::SwingLength() * 0.95f;
         if (isNearGround) {
             // break;
-            v = v * 0.99f;
-            m_physicsObject->setVelocity(v);
+            v = v * GP::SwingGroundBrakingFactor();
+            m_physicsObjectSwing->setVelocity(v);
 
             // switch back to non-breaking when velocity is slow enough
             if (jt::MathHelper::lengthSquared(v) < 0.01f) {
-                m_physicsObject->setVelocity({ 0.0f, 0.0 });
+                m_physicsObjectSwing->setVelocity({ 0.0f, 0.0 });
                 enableBreakMode(false);
             }
         }
@@ -44,43 +66,12 @@ void Swing::doKill() { }
 
 void Swing::doDestroy() { }
 
-Swing::Swing(std::shared_ptr<jt::Box2DWorldInterface> world)
-{
-    b2BodyDef suspensionBodyDef;
-    suspensionBodyDef.type = b2BodyType::b2_staticBody;
-    suspensionBodyDef.position
-        = b2Vec2 { GP::GetScreenSize().x / 2.0f, GP::GetScreenSize().y / 2.0f - 32 };
-    m_physicsObjectSuspension = std::make_shared<jt::Box2DObject>(world, &suspensionBodyDef);
-
-    b2BodyDef bodyDef;
-    bodyDef.position = b2Vec2 { GP::GetScreenSize().x / 2.0f, GP::GetScreenSize().y / 2.0f };
-    bodyDef.type = b2BodyType::b2_dynamicBody;
-    bodyDef.fixedRotation = false;
-    bodyDef.angularDamping = 0.0f;
-    bodyDef.linearDamping = GP::SwingDampingNormal();
-    m_physicsObject = std::make_shared<jt::Box2DObject>(world, &bodyDef);
-
-    b2DistanceJointDef jointDev;
-    jointDev.bodyA = m_physicsObject->getB2Body();
-    jointDev.bodyB = m_physicsObjectSuspension->getB2Body();
-    jointDev.collideConnected = false;
-    jointDev.length = 96;
-
-    jointDev.dampingRatio = 0.8f;
-    m_joint = std::make_shared<jt::Box2DJoint>(world, &jointDev);
-}
-
 void Swing::trigger(float strength)
 {
-    m_physicsObject->addForceToCenter(jt::Vector2f { 40000.0f * strength, 0.0f });
+    m_physicsObjectSwing->addForceToCenter(
+        jt::Vector2f { GP::SwingForceScalingFactor() * strength, 0.0f });
 }
 
-void Swing::enableBreakMode(bool enable)
-{
-    m_isInBreakMode = enable;
-    //    if (m_isInBreakMode) {
-    //        m_physicsObject->getB2Body()->SetLinearDamping(GP::SwingDampingNormal());
-    //    } else {
-    //        m_physicsObject->getB2Body()->SetLinearDamping(GP::SwingDampingWhenBreaking());
-    //    }
-}
+void Swing::enableBreakMode(bool enable) { m_isInBreakMode = enable; }
+
+float Swing::getHeight() const { return m_physicsObjectSwing->getPosition().y; }
