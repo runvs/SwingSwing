@@ -25,9 +25,8 @@ void StateGame::onCreate()
     m_swingBack = std::make_shared<jt::Sprite>("assets/schaukel_hinten.aseprite", textureManager());
     m_swingBack->update(0.0f);
 
-    m_schaukelFront
-        = std::make_shared<jt::Sprite>("assets/schaukel_vorne.aseprite", textureManager());
-    m_schaukelFront->update(0.0f);
+    m_swingFront = std::make_shared<jt::Sprite>("assets/schaukel_vorne.aseprite", textureManager());
+    m_swingFront->update(0.0f);
 
     m_clouds = std::make_shared<jt::MarioCloudsHorizontal>(
         5, jt::Vector2f { GP::GetScreenSize().x, 100.0f }, jt::Vector2f { 40.0f, 10.0f });
@@ -264,7 +263,7 @@ void StateGame::onDraw() const
 
     drawObjects();
 
-    m_schaukelFront->draw(renderTarget());
+    m_swingFront->draw(renderTarget());
 
     m_targetLineLower->draw(renderTarget());
     m_targetLineUpper->draw(renderTarget());

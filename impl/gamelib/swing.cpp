@@ -100,6 +100,7 @@ void Swing::doUpdate(float const elapsed)
     if (m_timeInSwingMode >= 3.5f) {
         enableBreakMode(true);
         m_timeInSwingMode = 0.0f;
+        m_timeInSwingMode = false;
     }
 
     auto v = m_physicsObjectSwing->getVelocity();
@@ -111,7 +112,6 @@ void Swing::doUpdate(float const elapsed)
 
     if (isNearGround) {
         auto l2 = jt::MathHelper::lengthSquared(v);
-        //        std::cout << l2 << std::endl;
         if (l2 < 200.0f) {
             v = v * GP::SwingGroundBrakingFactor();
             m_physicsObjectSwing->setVelocity(v);
@@ -133,7 +133,6 @@ void Swing::doUpdate(float const elapsed)
 
         if (m_isInSwing) {
             // switch back to non-breaking when velocity is slow enough
-
             if (jt::MathHelper::lengthSquared(v) < 0.03f) {
 
                 enableBreakMode(false);
