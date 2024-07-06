@@ -22,9 +22,8 @@ void StateGame::onCreate()
     m_background->setIgnoreCamMovement(true);
     m_background->update(0.0f);
 
-    m_schaukelBack
-        = std::make_shared<jt::Sprite>("assets/schaukel_hinten.aseprite", textureManager());
-    m_schaukelBack->update(0.0f);
+    m_swingBack = std::make_shared<jt::Sprite>("assets/schaukel_hinten.aseprite", textureManager());
+    m_swingBack->update(0.0f);
 
     m_schaukelFront
         = std::make_shared<jt::Sprite>("assets/schaukel_vorne.aseprite", textureManager());
@@ -51,7 +50,8 @@ void StateGame::onCreate()
 
     m_targetLineLower = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
     m_targetLineUpper = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
-
+    m_targetLineLower->setColor(jt::Color { 115, 149, 197, 200 });
+    m_targetLineUpper->setColor(jt::Color { 115, 149, 197, 200 });
     auto spawnParticle = [this]() {
         auto shape = std::make_shared<jt::Shape>();
         shape->makeRect(jt::Vector2f { 1.0f, 1.0f }, textureManager());
@@ -260,7 +260,7 @@ void StateGame::onDraw() const
     for (auto& g : m_grass) {
         g->draw(renderTarget());
     }
-    m_schaukelBack->draw(renderTarget());
+    m_swingBack->draw(renderTarget());
 
     drawObjects();
 

@@ -26,8 +26,8 @@ public:
 
 private:
     std::shared_ptr<jt::Sprite> m_background;
-    std::shared_ptr<jt::Sprite> m_schaukelBack;
-    std::shared_ptr<jt::Sprite> m_schaukelFront;
+    std::shared_ptr<jt::Sprite> m_swingBack;
+    std::shared_ptr<jt::Sprite> m_swingFront;
     std::vector<std::shared_ptr<jt::Animation>> m_grass;
 
     std::shared_ptr<jt::MarioCloudsHorizontal> m_clouds;
