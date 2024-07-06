@@ -204,7 +204,7 @@ void StateGame::checkForSwingTargetHeight(float elapsed)
             m_swing->enableBreakMode(true);
 
             createNewTarget();
-            auto successSound = getGame()->audio().addTemporarySound("event:/success");
+            auto successSound = getGame()->audio().addTemporarySound("event:/success-applause");
             successSound->play();
         }
     }
@@ -244,8 +244,11 @@ void StateGame::triggerSwing()
     m_swing->trigger(convertTimeToPower());
     m_spacePressedTimer = 0.0f;
 
-    auto releaseSwingSound = getGame()->audio().addTemporarySound("event:/release_swing");
+    auto releaseSwingSound = getGame()->audio().addTemporarySound("event:/swing-squeaks-up");
     releaseSwingSound->play();
+
+    auto happyShoutSound = getGame()->audio().addTemporarySound("event:/happy-shouts");
+    happyShoutSound->play();
 }
 
 float StateGame::convertTimeToPower()

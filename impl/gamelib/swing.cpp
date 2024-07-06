@@ -68,6 +68,9 @@ void Swing::doUpdate(float const elapsed)
                         if (m_physicsObjectSwing->getVelocity().y > 0) {
                             m_wasGoingUpLastFrame = false;
                             m_childAnimation->play("left");
+                            auto snd
+                                = getGame()->audio().addTemporarySound("event:/swing-squeaks-down");
+                            snd->play();
                         }
                     }
                 }
@@ -80,6 +83,9 @@ void Swing::doUpdate(float const elapsed)
                         if (m_physicsObjectSwing->getVelocity().y > 0) {
                             m_wasGoingUpLastFrame = false;
                             m_childAnimation->play("right");
+                            auto snd
+                                = getGame()->audio().addTemporarySound("event:/swing-squeaks-down");
+                            snd->play();
                         }
                     }
                 }
