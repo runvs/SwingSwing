@@ -66,11 +66,11 @@ void jt::Sound::setVolume(float newVolume)
 bool jt::Sound::checkValid() const
 {
     if (m_instance == nullptr) {
-        std::cerr << "created sound with nullptr";
+        std::cerr << "created sound with nullptr" << std::endl;
         return false;
     }
     if (!m_instance->isValid()) {
-        std::cerr << "Sound with invalid instance";
+        std::cerr << "Sound with invalid instance" << std::endl;
         return false;
     }
 
