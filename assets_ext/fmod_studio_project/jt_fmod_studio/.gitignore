@@ -1,0 +1,6 @@
+.*/
+[Bb]uild/
+/Assets/Local Audio Files
+/Metadata/AudioFile/**
+/Metadata/Asset/**
+/Metadata/DataFile/**
