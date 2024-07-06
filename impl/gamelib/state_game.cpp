@@ -189,6 +189,9 @@ void StateGame::checkForSwingTargetHeight(float elapsed)
                 // fail
                 m_swing->enableBreakMode(true);
                 m_swingTargetTimeSinceReachedLower = 0.0f;
+
+                auto failSound = getGame()->audio().addTemporarySound("event:/fail");
+                failSound->play();
             }
         } else {
             // succeed
@@ -199,6 +202,9 @@ void StateGame::checkForSwingTargetHeight(float elapsed)
             m_swingTargetTimeSinceReachedLower = 0.0f;
 
             m_swing->enableBreakMode(true);
+
+            auto successSound = getGame()->audio().addTemporarySound("event:/success");
+            successSound->play();
         }
     }
 }
@@ -236,6 +242,9 @@ void StateGame::triggerSwing()
 {
     m_swing->trigger(convertTimeToPower());
     m_spacePressedTimer = 0.0f;
+
+    auto releaseSwingSound = getGame()->audio().addTemporarySound("event:/release_swing");
+    releaseSwingSound->play();
 }
 
 float StateGame::convertTimeToPower()
