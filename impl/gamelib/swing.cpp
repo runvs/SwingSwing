@@ -43,20 +43,24 @@ void Swing::doUpdate(float const elapsed)
     m_shape->update(elapsed);
 
     if (m_isInBreakMode) {
+        m_shape->setColor(jt::Color { 150, 0, 0 });
         auto v = m_physicsObjectSwing->getVelocity();
         auto const isNearGround = m_physicsObjectSwing->getPosition().y
             > GP::SwingSuspensionPosition().y + GP::SwingLength() * 0.95f;
         if (isNearGround) {
-            // break;
+            // break
+            m_shape->setColor(jt::Color { 255, 0, 0 });
             v = v * GP::SwingGroundBrakingFactor();
             m_physicsObjectSwing->setVelocity(v);
 
             // switch back to non-breaking when velocity is slow enough
-            if (jt::MathHelper::lengthSquared(v) < 0.01f) {
+            if (jt::MathHelper::lengthSquared(v) < 0.05f) {
                 m_physicsObjectSwing->setVelocity({ 0.0f, 0.0 });
                 enableBreakMode(false);
             }
         }
+    } else {
+        m_shape->setColor(jt::colors::Gray);
     }
 }
 
