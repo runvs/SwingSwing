@@ -33,7 +33,7 @@ void StateGame::onCreate()
     // StateGame will call drawObjects itself.
     setAutoDraw(false);
 
-    m_bar = std::make_shared<jt::Bar>(16, 128, false, textureManager());
+    m_swingPowerBar = std::make_shared<jt::Bar>(16, 128, false, textureManager());
 }
 
 void StateGame::onEnter() { }
@@ -59,11 +59,13 @@ void StateGame::onUpdate(float const elapsed)
             endGame();
         }
 
-        if (getGame()->input().keyboard()->pressed(jt::KeyCode::Space)) {
-            m_spacePressedTimer += elapsed;
-        }
-        if (getGame()->input().keyboard()->justReleased(jt::KeyCode::Space)) {
-            triggerSwing();
+        if (!m_swing->isInSwing()) {
+            if (getGame()->input().keyboard()->pressed(jt::KeyCode::Space)) {
+                m_spacePressedTimer += elapsed;
+            }
+            if (getGame()->input().keyboard()->justReleased(jt::KeyCode::Space)) {
+                triggerSwing();
+            }
         }
 
         // Check Swing
@@ -74,9 +76,9 @@ void StateGame::onUpdate(float const elapsed)
             m_swing->enableBreakMode(true);
         }
 
-        m_bar->setCurrentValue(convertTimeToPower());
-        m_bar->setMaxValue(1.0f);
-        m_bar->update(elapsed);
+        m_swingPowerBar->setCurrentValue(convertTimeToPower());
+        m_swingPowerBar->setMaxValue(1.0f);
+        m_swingPowerBar->update(elapsed);
     }
 
     m_background->update(elapsed);
@@ -88,7 +90,9 @@ void StateGame::onDraw() const
     m_background->draw(renderTarget());
     drawObjects();
     m_vignette->draw();
-    m_bar->draw(renderTarget());
+    if (!m_swing->isInSwing()) {
+        m_swingPowerBar->draw(renderTarget());
+    }
     m_hud->draw();
 }
 

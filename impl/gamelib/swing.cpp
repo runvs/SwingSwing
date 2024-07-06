@@ -44,23 +44,33 @@ void Swing::doUpdate(float const elapsed)
 
     if (m_isInBreakMode) {
         m_shape->setColor(jt::Color { 150, 0, 0 });
-        auto v = m_physicsObjectSwing->getVelocity();
-        auto const isNearGround = m_physicsObjectSwing->getPosition().y
-            > GP::SwingSuspensionPosition().y + GP::SwingLength() * 0.95f;
-        if (isNearGround) {
-            // break
+    } else {
+        m_shape->setColor(jt::colors::Gray);
+    }
+    if (m_isInSwing) {
+        m_timeInSwingMode += elapsed;
+    }
+    auto v = m_physicsObjectSwing->getVelocity();
+    auto const isNearGround = m_physicsObjectSwing->getPosition().y
+        > GP::SwingSuspensionPosition().y + GP::SwingLength() * 0.95f;
+
+    if (isNearGround) {
+        if (m_isInBreakMode) {
             m_shape->setColor(jt::Color { 255, 0, 0 });
             v = v * GP::SwingGroundBrakingFactor();
             m_physicsObjectSwing->setVelocity(v);
+        }
 
+        if (m_isInSwing) {
             // switch back to non-breaking when velocity is slow enough
+
             if (jt::MathHelper::lengthSquared(v) < 0.05f) {
-                m_physicsObjectSwing->setVelocity({ 0.0f, 0.0 });
                 enableBreakMode(false);
+                if (m_timeInSwingMode >= 0.5f) {
+                    m_isInSwing = false;
+                }
             }
         }
-    } else {
-        m_shape->setColor(jt::colors::Gray);
     }
 }
 
@@ -74,8 +84,12 @@ void Swing::trigger(float strength)
 {
     m_physicsObjectSwing->addForceToCenter(
         jt::Vector2f { GP::SwingForceScalingFactor() * strength, 0.0f });
+    m_isInSwing = true;
+    m_timeInSwingMode = 0.0f;
 }
 
 void Swing::enableBreakMode(bool enable) { m_isInBreakMode = enable; }
 
 float Swing::getHeight() const { return m_physicsObjectSwing->getPosition().y; }
+
+bool Swing::isInSwing() const { return m_isInSwing; }
