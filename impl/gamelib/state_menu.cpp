@@ -45,6 +45,16 @@ void StateMenu::onCreate()
 
     getGame()->stateManager().setTransition(std::make_shared<jt::StateManagerTransitionFadeToBlack>(
         GP::GetScreenSize(), textureManager()));
+
+    try {
+        auto bgm = getGame()->audio().getPermanentSound("bgm");
+        if (bgm == nullptr) {
+            bgm = getGame()->audio().addPermanentSound("bgm", "event:/music-01");
+            bgm->play();
+        }
+    } catch (std::exception const& e) {
+        getGame()->logger().error(e.what(), { "menu", "bgm" });
+    }
 }
 
 void StateMenu::onEnter()
