@@ -29,7 +29,7 @@ void StateGame::onCreate()
     m_swingLine1->setPosition(GP::SwingSuspensionPosition() + jt::Vector2f { -5, -5 });
     m_swingLine1->setColor(jt::Color { 121, 121, 121, 255 });
 
-    m_swingLine2 = std::make_shared<jt::Line>(jt::Vector 2f { 0.0f, 0.0f });
+    m_swingLine2 = std::make_shared<jt::Line>(jt::Vector2f { 0.0f, 0.0f });
     m_swingLine2->setPosition(GP::SwingSuspensionPosition() + jt::Vector2f { 5, 5 });
     m_swingLine2->setColor(jt::Color { 121, 121, 121, 255 });
 
