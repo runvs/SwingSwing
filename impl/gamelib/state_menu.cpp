@@ -41,6 +41,11 @@ void StateMenu::onCreate()
     m_football->play("idle");
     m_football->setPosition(jt::Vector2f { 240, 200 });
 
+    m_switch = std::make_shared<jt::Animation>();
+    m_switch->loadFromAseprite("assets/switch.aseprite", textureManager());
+    m_switch->play("idle");
+    m_switch->setPosition(jt::Vector2f { 10, 210 });
+
     add(std::make_shared<jt::LicenseInfo>());
 
     getGame()->stateManager().setTransition(std::make_shared<jt::StateManagerTransitionFadeToBlack>(
@@ -234,6 +239,7 @@ void StateMenu::onUpdate(float const elapsed)
         }
     }
     m_football->update(elapsed);
+    m_switch->update(elapsed);
 }
 
 void StateMenu::updateDrawables(float const& elapsed)
@@ -280,6 +286,8 @@ void StateMenu::onDraw() const
     m_swingFront->draw(renderTarget());
 
     m_football->draw(renderTarget());
+
+    m_switch->draw(renderTarget());
 
     m_titleAnimation->draw(renderTarget());
     m_textStart->draw(renderTarget());
