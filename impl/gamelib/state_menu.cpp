@@ -1,4 +1,6 @@
 ﻿#include "state_menu.hpp"
+#include "random/random.hpp"
+#include "strutils.hpp"
 #include <build_info.hpp>
 #include <color/color.hpp>
 #include <drawable_helpers.hpp>
@@ -7,7 +9,6 @@
 #include <input/input_manager.hpp>
 #include <lerp.hpp>
 #include <log/license_info.hpp>
-#include <algorithm>
 #include <screeneffects/vignette.hpp>
 #include <state_game.hpp>
 #include <state_manager/state_manager_transition_fade_to_black.hpp>
@@ -15,12 +16,14 @@
 #include <tweens/tween_alpha.hpp>
 #include <tweens/tween_color.hpp>
 #include <tweens/tween_position.hpp>
+#include <algorithm>
 
 void StateMenu::onCreate()
 {
     createMenuText();
     createShapes();
     createVignette();
+    createGrass();
 
     add(std::make_shared<jt::LicenseInfo>());
 
@@ -42,8 +45,10 @@ void StateMenu::createVignette()
 
 void StateMenu::createShapes()
 {
-    m_background
-        = jt::dh::createShapeRect(GP::GetScreenSize(), GP::PaletteBackground(), textureManager());
+    m_background = std::make_shared<jt::Animation>();
+    m_background->loadFromAseprite("assets/background.aseprite", textureManager());
+
+    m_background->play("idle");
     m_overlay = jt::dh::createShapeRect(GP::GetScreenSize(), jt::colors::Black, textureManager());
 }
 
@@ -185,6 +190,9 @@ void StateMenu::onUpdate(float const elapsed)
 {
     updateDrawables(elapsed);
     checkForTransitionToStateGame();
+    for (auto& g : m_grass) {
+        g->update(elapsed);
+    }
 }
 
 void StateMenu::updateDrawables(float const& elapsed)
@@ -203,7 +211,7 @@ void StateMenu::checkForTransitionToStateGame()
 {
     auto const keysToTriggerTransition = { jt::KeyCode::Space, jt::KeyCode::Enter };
 
-    if (std::any_of(std::begin(keysToTriggerTransition),std::end(keysToTriggerTransition) ,
+    if (std::any_of(std::begin(keysToTriggerTransition), std::end(keysToTriggerTransition),
             [this](auto const k) { return getGame()->input().keyboard()->justPressed(k); })) {
         startTransitionToStateGame();
     }
@@ -222,6 +230,10 @@ void StateMenu::onDraw() const
 {
     m_background->draw(renderTarget());
 
+    for (auto& g : m_grass) {
+        g->draw(renderTarget());
+    }
+
     m_textTitle->draw(renderTarget());
     m_textStart->draw(renderTarget());
     m_textExplanation->draw(renderTarget());
@@ -232,3 +244,30 @@ void StateMenu::onDraw() const
 }
 
 std::string StateMenu::getName() const { return "State Menu"; }
+
+void StateMenu::createGrass()
+{
+    for (auto i = 0u; i != 80u; ++i) {
+        auto g = std::make_shared<jt::Animation>();
+        std::string name = "gras";
+        if (jt::Random::getChance(0.3f)) {
+            name = "flower";
+        }
+
+        if (jt::Random::getChance()) {
+            name += "1";
+        } else {
+            name += "2";
+        }
+        g->loadFromAseprite("assets/" + name + ".aseprite", textureManager());
+        g->play("idle");
+        if (strutil::contains(name, "gras")) {
+            auto const v = jt::Random::getInt(200, 230);
+            g->setColor(jt::Color { static_cast<std::uint8_t>(v), static_cast<std::uint8_t>(v),
+                static_cast<std::uint8_t>(v) });
+        }
+        g->setAnimationSpeedFactor(jt::Random::getFloat(0.7f, 1.2f));
+        g->setPosition(jt::Random::getRandomPointIn(jt::Rectf { 0.0f, 203.0f, 320.0f, 37.0f }));
+        m_grass.emplace_back(std::move(g));
+    }
+}

@@ -19,8 +19,11 @@ public:
 
     void setScore(int s) { m_score = s; };
 
+    void createGrass();
+
 private:
-    std::shared_ptr<jt::Shape> m_background;
+    std::shared_ptr<jt::Animation> m_background;
+    std::vector<std::shared_ptr<jt::Animation>> m_grass;
 
     std::shared_ptr<jt::Text> m_textTitle;
     std::shared_ptr<jt::Text> m_textStart;
@@ -54,7 +57,7 @@ private:
     void createTweenExplanation();
 
     void onUpdate(float const elapsed) override;
-    void updateDrawables(const float& elapsed);
+    void updateDrawables(float const& elapsed);
     void checkForTransitionToStateGame();
     void startTransitionToStateGame();
 
