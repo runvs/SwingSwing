@@ -83,7 +83,7 @@ void StateMenu::createTextExplanation()
 void StateMenu::createTextCredits()
 {
     m_textCredits = jt::dh::createText(renderTarget(),
-        "Created by " + GP::AuthorName() + " for " + GP::JamName() + "\n" + GP::JamDate()
+        "Created by " + GP::AuthorName() + " for\n" + GP::JamName() + " " + GP::JamDate()
             + "\nF9 for License Information",
         14u, GP::PaletteFontCredits());
     m_textCredits->setTextAlign(jt::Text::TextAlign::LEFT);
@@ -105,8 +105,7 @@ void StateMenu::createTextCredits()
 void StateMenu::createTextStart()
 {
     auto const half_width = GP::GetScreenSize().x / 2.0f;
-    m_textStart = jt::dh::createText(
-        renderTarget(), "Press Space to start the game", 16u, GP::PaletteFontFront());
+    m_textStart = jt::dh::createText(renderTarget(), "", 16u, GP::PaletteFontFront());
     m_textStart->setPosition({ half_width, 70 });
     m_textStart->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 2, 2 });
 }

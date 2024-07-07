@@ -12,15 +12,16 @@ public:
 
     static std::string GameName() { return "Swing Swing"; }
 
-    static std::string AuthorName() { return "TODO"; }
+    static std::string AuthorName() { return "Adkiem, BloodyOrange, Laguna"; }
 
-    static std::string JamName() { return "TODO"; }
+    static std::string JamName() { return "Games& Festival"; }
 
-    static std::string JamDate() { return "TODO"; }
+    static std::string JamDate() { return "July 2024"; }
 
     static std::string ExplanationText()
     {
-        return "Win the game\n[W,A,S,D] to move \n[Space] to jump\n[M/U] to mute/unmute audio";
+        return "Reach the designated swing height\nHold [Space] to swing\n[M/U] to mute/unmute "
+               "audio";
     }
 
     static jt::Vector2f GetWindowSize() { return jt::Vector2f { 1280, 960 }; }
