@@ -32,13 +32,13 @@ public:
 
     static jt::Color PaletteBackground() { return GP::getPalette().getColor(4); }
 
-    static jt::Color PaletteFontFront() { return GP::getPalette().getColor(0); }
+    static jt::Color PaletteFontFront() { return jt::Color { 227, 81, 0, 255 }; }
 
     static jt::Color PalleteFrontHighlight() { return GP::getPalette().getColor(1); }
 
-    static jt::Color PaletteFontShadow() { return GP::getPalette().getColor(2); }
+    static jt::Color PaletteFontShadow() { return jt::Color { 162, 48, 0, 255 }; }
 
-    static jt::Color PaletteFontCredits() { return GP::getPalette().getColor(1); }
+    static jt::Color PaletteFontCredits() { return jt::Color { 162, 255, 243, 255 }; }
 
     static jt::Palette getPalette();
 

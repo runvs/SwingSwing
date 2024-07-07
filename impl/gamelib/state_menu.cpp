@@ -82,7 +82,7 @@ void StateMenu::createTextExplanation()
         = jt::dh::createText(renderTarget(), GP::ExplanationText(), 16u, GP::PaletteFontFront());
     auto const half_width = GP::GetScreenSize().x / 2.0f;
     m_textExplanation->setPosition({ half_width, 100 });
-    m_textExplanation->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 2, 2 });
+    m_textExplanation->setShadow(jt::Color { 40, 40, 40, 150 }, jt::Vector2f { 1, 1 });
 }
 
 void StateMenu::createTextCredits()
@@ -93,7 +93,7 @@ void StateMenu::createTextCredits()
         14u, GP::PaletteFontCredits());
     m_textCredits->setTextAlign(jt::Text::TextAlign::LEFT);
     m_textCredits->setPosition({ 10, GP::GetScreenSize().y - 70 });
-    m_textCredits->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 1, 1 });
+    m_textCredits->setShadow(jt::Color { 40, 40, 40, 150 }, jt::Vector2f { 1, 1 });
 
     m_textVersion = jt::dh::createText(renderTarget(), "", 14u, GP::PaletteFontCredits());
     if (jt::BuildInfo::gitTagName() != "") {
@@ -104,7 +104,7 @@ void StateMenu::createTextCredits()
     }
     m_textVersion->setTextAlign(jt::Text::TextAlign::RIGHT);
     m_textVersion->setPosition({ GP::GetScreenSize().x - 5.0f, GP::GetScreenSize().y - 20.0f });
-    m_textVersion->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 1, 1 });
+    m_textVersion->setShadow(jt::Color { 40, 40, 40, 150 }, jt::Vector2f { 1, 1 });
 }
 
 void StateMenu::createTextStart()
