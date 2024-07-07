@@ -77,9 +77,11 @@ void StateMenu::createVignette()
 void StateMenu::createShapes()
 {
     m_background = std::make_shared<jt::Animation>();
-    m_background->loadFromAseprite("assets/background.aseprite", textureManager());
 
+    m_background->loadFromAseprite("assets/background.aseprite", textureManager());
     m_background->play("idle");
+    m_background->update(0.1f);
+
     m_overlay = jt::dh::createShapeRect(GP::GetScreenSize(), jt::colors::Black, textureManager());
 }
 
@@ -244,7 +246,6 @@ void StateMenu::onUpdate(float const elapsed)
 
 void StateMenu::updateDrawables(float const& elapsed)
 {
-    m_background->update(elapsed);
     m_titleAnimation->update(elapsed);
     m_textStart->update(elapsed);
     m_textExplanation->update(elapsed);
