@@ -43,7 +43,7 @@ private:
 
     std::shared_ptr<jt::Line> m_targetLineLower { nullptr };
     std::shared_ptr<jt::Line> m_targetLineUpper { nullptr };
-    using ParticleSystemType = jt::ParticleSystem<jt::Shape, 100>;
+    using ParticleSystemType = jt::ParticleSystem<jt::Shape, 150>;
     std::shared_ptr<ParticleSystemType> m_targetLineParticlesLower;
     std::shared_ptr<ParticleSystemType> m_targetLineParticlesUpper;
     std::shared_ptr<ParticleSystemType> m_swingParticles;

@@ -60,12 +60,13 @@ void StateGame::onCreate()
 
     m_targetLineLower = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
     m_targetLineUpper = std::make_shared<jt::Line>(jt::Vector2f { GP::GetScreenSize().x, 0.0f });
-    m_targetLineLower->setColor(jt::Color { 115, 149, 197, 200 });
-    m_targetLineUpper->setColor(jt::Color { 115, 149, 197, 200 });
+    m_targetLineLower->setColor(jt::Color { 255, 243, 146, 200 });
+    m_targetLineUpper->setColor(jt::Color { 255, 243, 146, 200 });
     auto spawnParticle = [this]() {
-        auto shape = std::make_shared<jt::Shape>();
-        shape->makeRect(jt::Vector2f { 1.0f, 1.0f }, textureManager());
-        return shape;
+        auto particle = std::make_shared<jt::Shape>();
+        particle->makeRect(jt::Vector2f { 1.0f, 1.0f }, textureManager());
+        particle->setColor({ 255, 243, 146, 255 });
+        return particle;
     };
 
     m_targetLineParticlesLower = ParticleSystemType::createPS(
@@ -74,10 +75,10 @@ void StateGame::onCreate()
                 + jt::Random::getRandomPointIn(jt::Vector2f { GP::GetScreenSize().x, 1.0f });
             particle->setPosition(startPos);
 
-            float const totalTime = 1.5f;
+            float const totalTime = 2.5f;
 
             jt::Vector2f endPos
-                = startPos + jt::Vector2f { 0.0f, -16.0f * jt::Random::getFloat(0.4f, 1.0f) };
+                = startPos + jt::Vector2f { 0.0f, -32.0f * jt::Random::getFloat(0.4f, 1.0f) };
             endPos.y = std::clamp(endPos.y, m_swingTargetHeightUpper, m_swingTargetHeightLower);
             add(jt::TweenPosition::create(particle, totalTime, startPos, endPos));
 
@@ -94,9 +95,9 @@ void StateGame::onCreate()
                 + jt::Random::getRandomPointIn(jt::Vector2f { GP::GetScreenSize().x, 1.0f });
             particle->setPosition(startPos);
 
-            float const totalTime = 1.5f;
+            float const totalTime = 2.5f;
             jt::Vector2f endPos
-                = startPos + jt::Vector2f { 0.0f, 16.0f * jt::Random::getFloat(0.4f, 1.0f) };
+                = startPos + jt::Vector2f { 0.0f, 32.0f * jt::Random::getFloat(0.4f, 1.0f) };
             endPos.y = std::clamp(endPos.y, m_swingTargetHeightUpper, m_swingTargetHeightLower);
             add(jt::TweenPosition::create(particle, totalTime, startPos, endPos));
 
@@ -175,7 +176,7 @@ void StateGame::onUpdate(float const elapsed)
         updateTargetLine(elapsed);
 
         m_targetLineParticlesTimer += elapsed;
-        constexpr auto timerMax = 0.1f;
+        constexpr auto timerMax = 0.025f;
         while (m_targetLineParticlesTimer > timerMax) {
             m_targetLineParticlesLower->fire(1);
             m_targetLineParticlesUpper->fire(1);
@@ -287,7 +288,7 @@ void StateGame::onDraw() const
 
     m_targetLineLower->draw(renderTarget());
     m_targetLineUpper->draw(renderTarget());
-    m_vignette->draw();
+
     if (!m_swing->isInSwing()) {
         m_swingPowerBar->draw(renderTarget());
     }
