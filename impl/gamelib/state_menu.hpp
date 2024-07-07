@@ -27,7 +27,10 @@ private:
     std::vector<std::shared_ptr<jt::Animation>> m_grass;
     std::shared_ptr<jt::MarioCloudsHorizontal> m_clouds;
 
-    std::shared_ptr<jt::Text> m_textTitle;
+    std::shared_ptr<jt::Sprite> m_swingBack;
+    std::shared_ptr<jt::Sprite> m_swingFront;
+
+    std::shared_ptr<jt::Animation> m_titleAnimation;
     std::shared_ptr<jt::Text> m_textStart;
     std::shared_ptr<jt::Text> m_textExplanation;
     std::shared_ptr<jt::Text> m_textCredits;

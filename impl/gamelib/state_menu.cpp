@@ -30,6 +30,12 @@ void StateMenu::onCreate()
     m_clouds->setGameInstance(getGame());
     m_clouds->create();
 
+    m_swingBack = std::make_shared<jt::Sprite>("assets/schaukel_hinten.aseprite", textureManager());
+    m_swingBack->update(0.0f);
+
+    m_swingFront = std::make_shared<jt::Sprite>("assets/schaukel_vorne.aseprite", textureManager());
+    m_swingFront->update(0.0f);
+
     add(std::make_shared<jt::LicenseInfo>());
 
     getGame()->stateManager().setTransition(std::make_shared<jt::StateManagerTransitionFadeToBlack>(
@@ -107,10 +113,10 @@ void StateMenu::createTextStart()
 
 void StateMenu::createTextTitle()
 {
-    float half_width = GP::GetScreenSize().x / 2;
-    m_textTitle = jt::dh::createText(renderTarget(), GP::GameName(), 32u, GP::PaletteFontFront());
-    m_textTitle->setPosition({ half_width, 10 });
-    m_textTitle->setShadow(GP::PaletteFontShadow(), jt::Vector2f { 3, 3 });
+    m_titleAnimation = std::make_shared<jt::Animation>();
+    m_titleAnimation->loadFromAseprite("assets/menu_logo.aseprite", textureManager());
+    m_titleAnimation->play("idle");
+    m_titleAnimation->setPosition(jt::Vector2f { 30, -30 });
 }
 
 void StateMenu::createTweens()
@@ -157,7 +163,7 @@ void StateMenu::createTweenExplanation()
 
 void StateMenu::createTweenTitleAlpha()
 {
-    auto const tween = jt::TweenAlpha::create(m_textTitle, 0.55f, 0, 255);
+    auto const tween = jt::TweenAlpha::create(m_titleAnimation, 0.75f, 0, 255);
     tween->setStartDelay(0.2f);
     tween->setSkipTicks();
     add(tween);
@@ -204,7 +210,7 @@ void StateMenu::onUpdate(float const elapsed)
 void StateMenu::updateDrawables(float const& elapsed)
 {
     m_background->update(elapsed);
-    m_textTitle->update(elapsed);
+    m_titleAnimation->update(elapsed);
     m_textStart->update(elapsed);
     m_textExplanation->update(elapsed);
     m_textCredits->update(elapsed);
@@ -241,7 +247,10 @@ void StateMenu::onDraw() const
         g->draw(renderTarget());
     }
 
-    m_textTitle->draw(renderTarget());
+    m_swingBack->draw(renderTarget());
+    m_swingFront->draw(renderTarget());
+
+    m_titleAnimation->draw(renderTarget());
     m_textStart->draw(renderTarget());
     m_textExplanation->draw(renderTarget());
     m_textCredits->draw(renderTarget());
