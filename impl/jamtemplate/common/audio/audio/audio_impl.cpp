@@ -89,3 +89,13 @@ std::shared_ptr<jt::SoundInterface> jt::AudioImpl::getPermanentSound(std::string
 
     return nullptr;
 }
+
+void jt::AudioImpl::setGroupVolume(std::string const& groupPath, float newVolume)
+{
+    FMOD::Studio::Bus* bus { nullptr };
+    checkResult(m_studioSystem->getBus(groupPath.c_str(), &bus));
+    if (bus == nullptr) {
+        return;
+    }
+    checkResult(bus->setVolume(newVolume));
+}

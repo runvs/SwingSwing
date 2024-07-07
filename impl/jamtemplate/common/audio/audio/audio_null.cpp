@@ -20,3 +20,8 @@ std::shared_ptr<jt::SoundInterface> jt::null_objects::AudioNull::addPermanentSou
 {
     return std::make_shared<jt::SoundNull>();
 }
+
+void jt::null_objects::AudioNull::setGroupVolume(
+    std::string const& /*groupPath*/, float /*newVolume*/)
+{
+}
