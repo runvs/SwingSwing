@@ -51,15 +51,15 @@ void StateMenu::onCreate()
     getGame()->stateManager().setTransition(std::make_shared<jt::StateManagerTransitionFadeToBlack>(
         GP::GetScreenSize(), textureManager()));
 
-    //    try {
-    //        auto bgm = getGame()->audio().getPermanentSound("bgm");
-    //        if (bgm == nullptr) {
-    //            bgm = getGame()->audio().addPermanentSound("bgm", "event:/music-01");
-    //            bgm->play();
-    //        }
-    //    } catch (std::exception const& e) {
-    //        getGame()->logger().error(e.what(), { "menu", "bgm" });
-    //    }
+    try {
+        auto bgm = getGame()->audio().getPermanentSound("bgm");
+        if (bgm == nullptr) {
+            bgm = getGame()->audio().addPermanentSound("bgm", "event:/music-01");
+            bgm->play();
+        }
+    } catch (std::exception const& e) {
+        getGame()->logger().error(e.what(), { "menu", "bgm" });
+    }
 }
 
 void StateMenu::onEnter()
@@ -269,6 +269,8 @@ void StateMenu::startTransitionToStateGame()
 {
     if (!m_started) {
         m_started = true;
+        auto startGame_sound = getGame()->audio().addTemporarySound("event:/start-game");
+        startGame_sound->play();
         getGame()->stateManager().storeCurrentState("menu");
         getGame()->stateManager().switchState(std::make_shared<StateGame>());
     }
