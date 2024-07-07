@@ -27,6 +27,8 @@ public:
 private:
     std::shared_ptr<jt::Sprite> m_background;
     std::shared_ptr<jt::Sprite> m_swingBack;
+    std::shared_ptr<jt::Line> m_swingLine1;
+    std::shared_ptr<jt::Line> m_swingLine2;
     std::shared_ptr<jt::Sprite> m_swingFront;
     std::vector<std::shared_ptr<jt::Animation>> m_grass;
 

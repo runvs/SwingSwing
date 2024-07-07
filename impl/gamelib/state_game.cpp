@@ -25,6 +25,14 @@ void StateGame::onCreate()
     m_swingBack = std::make_shared<jt::Sprite>("assets/schaukel_hinten.aseprite", textureManager());
     m_swingBack->update(0.0f);
 
+    m_swingLine1 = std::make_shared<jt::Line>(jt::Vector2f { 0.0f, 0.0f });
+    m_swingLine1->setPosition(GP::SwingSuspensionPosition() + jt::Vector2f { -5, -5 });
+    m_swingLine1->setColor(jt::Color { 121, 121, 121, 255 });
+
+    m_swingLine2 = std::make_shared<jt::Line>(jt::Vector 2f { 0.0f, 0.0f });
+    m_swingLine2->setPosition(GP::SwingSuspensionPosition() + jt::Vector2f { 5, 5 });
+    m_swingLine2->setColor(jt::Color { 121, 121, 121, 255 });
+
     m_swingFront = std::make_shared<jt::Sprite>("assets/schaukel_vorne.aseprite", textureManager());
     m_swingFront->update(0.0f);
 
@@ -206,6 +214,13 @@ void StateGame::onUpdate(float const elapsed)
     m_targetLineParticlesLower->update(elapsed);
     m_targetLineParticlesUpper->update(elapsed);
     m_swingParticles->update(elapsed);
+    m_swingLine1->setLineVector(
+        m_swing->getPosition() - m_swingLine1->getPosition() + jt::Vector2f { -4, 6 });
+    m_swingLine1->update(elapsed);
+
+    m_swingLine2->setLineVector(
+        m_swing->getPosition() - m_swingLine2->getPosition() + jt::Vector2f { 2, 6 });
+    m_swingLine2->update(elapsed);
 }
 
 void StateGame::updateTargetLine(float const elapsed) const
@@ -264,7 +279,8 @@ void StateGame::onDraw() const
         g->draw(renderTarget());
     }
     m_swingBack->draw(renderTarget());
-
+    m_swingLine1->draw(renderTarget());
+    m_swingLine2->draw(renderTarget());
     drawObjects();
 
     m_swingFront->draw(renderTarget());

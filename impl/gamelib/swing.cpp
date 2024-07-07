@@ -129,7 +129,7 @@ void Swing::doUpdate(float const elapsed)
 
         if (m_isInSwing) {
             // switch back to non-breaking when velocity is slow enough
-            std::cout << jt::MathHelper::length(v) << std::endl;
+            //            std::cout << jt::MathHelper::length(v) << std::endl;
             if (jt::MathHelper::length(v) < 5.0f) {
 
                 enableBreakMode(false);

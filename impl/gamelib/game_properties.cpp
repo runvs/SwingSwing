@@ -39,7 +39,7 @@ float GP::SwingDampingNormal() { return 0.2f; }
 
 jt::Vector2f GP::SwingSuspensionPosition()
 {
-    return GetScreenSize() * 0.5 + jt::Vector2f { 0.0f, -48.0f };
+    return GetScreenSize() * 0.5 + jt::Vector2f { 8.0f, -32.0f };
 }
 
 float GP::SwingLength() { return 128.0f; }
