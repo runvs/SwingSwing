@@ -25,6 +25,11 @@ void StateMenu::onCreate()
     createVignette();
     createGrass();
 
+    m_clouds = std::make_shared<jt::MarioCloudsHorizontal>(
+        5, jt::Vector2f { GP::GetScreenSize().x, 100.0f }, jt::Vector2f { 40.0f, 10.0f });
+    m_clouds->setGameInstance(getGame());
+    m_clouds->create();
+
     add(std::make_shared<jt::LicenseInfo>());
 
     getGame()->stateManager().setTransition(std::make_shared<jt::StateManagerTransitionFadeToBlack>(
@@ -193,6 +198,7 @@ void StateMenu::onUpdate(float const elapsed)
     for (auto& g : m_grass) {
         g->update(elapsed);
     }
+    m_clouds->update(elapsed);
 }
 
 void StateMenu::updateDrawables(float const& elapsed)
@@ -229,6 +235,7 @@ void StateMenu::startTransitionToStateGame()
 void StateMenu::onDraw() const
 {
     m_background->draw(renderTarget());
+    m_clouds->draw();
 
     for (auto& g : m_grass) {
         g->draw(renderTarget());

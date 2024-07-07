@@ -1,6 +1,7 @@
 ﻿#ifndef GAME_STATE_MENU_HPP
 #define GAME_STATE_MENU_HPP
 
+#include "screeneffects/mario_clouds_horizontal.hpp"
 #include <game_state.hpp>
 
 namespace jt {
@@ -24,6 +25,7 @@ public:
 private:
     std::shared_ptr<jt::Animation> m_background;
     std::vector<std::shared_ptr<jt::Animation>> m_grass;
+    std::shared_ptr<jt::MarioCloudsHorizontal> m_clouds;
 
     std::shared_ptr<jt::Text> m_textTitle;
     std::shared_ptr<jt::Text> m_textStart;
