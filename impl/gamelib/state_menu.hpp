@@ -30,6 +30,9 @@ private:
     std::shared_ptr<jt::Sprite> m_swingBack;
     std::shared_ptr<jt::Sprite> m_swingFront;
 
+    std::shared_ptr<jt::Animation> m_football;
+    float m_footballTimer { 0.0f };
+
     std::shared_ptr<jt::Animation> m_titleAnimation;
     std::shared_ptr<jt::Text> m_textStart;
     std::shared_ptr<jt::Text> m_textExplanation;

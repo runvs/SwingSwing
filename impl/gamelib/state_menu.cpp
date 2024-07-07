@@ -36,6 +36,11 @@ void StateMenu::onCreate()
     m_swingFront = std::make_shared<jt::Sprite>("assets/schaukel_vorne.aseprite", textureManager());
     m_swingFront->update(0.0f);
 
+    m_football = std::make_shared<jt::Animation>();
+    m_football->loadFromAseprite("assets/football.aseprite", textureManager());
+    m_football->play("idle");
+    m_football->setPosition(jt::Vector2f { 240, 200 });
+
     add(std::make_shared<jt::LicenseInfo>());
 
     getGame()->stateManager().setTransition(std::make_shared<jt::StateManagerTransitionFadeToBlack>(
@@ -204,6 +209,21 @@ void StateMenu::onUpdate(float const elapsed)
         g->update(elapsed);
     }
     m_clouds->update(elapsed);
+    m_footballTimer += elapsed;
+    if (m_football->getCurrentAnimationName() == "idle") {
+        if (m_footballTimer > 1.3f) {
+            m_footballTimer = 0.0f;
+            if (jt::Random::getChance(0.2f)) {
+                m_football->play("accident");
+            }
+        }
+    } else {
+        if (m_footballTimer > 2.35f) {
+            m_footballTimer = 0.0f;
+            m_football->play("idle");
+        }
+    }
+    m_football->update(elapsed);
 }
 
 void StateMenu::updateDrawables(float const& elapsed)
@@ -248,6 +268,8 @@ void StateMenu::onDraw() const
 
     m_swingBack->draw(renderTarget());
     m_swingFront->draw(renderTarget());
+
+    m_football->draw(renderTarget());
 
     m_titleAnimation->draw(renderTarget());
     m_textStart->draw(renderTarget());
