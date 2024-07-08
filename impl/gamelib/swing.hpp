@@ -26,7 +26,6 @@ public:
 private:
     std::shared_ptr<jt::Box2DObject> m_physicsObjectSuspension;
     std::shared_ptr<jt::Box2DObject> m_physicsObjectSwing;
-    std::shared_ptr<jt::Shape> m_shape;
     std::shared_ptr<jt::Animation> m_childAnimation;
     std::shared_ptr<jt::Box2DJoint> m_joint;
 
@@ -37,11 +36,15 @@ private:
     bool m_wasGoingUpLastFrame { true };
     bool m_wasRightLastFrame { false };
 
+    bool m_wasOnTop { false };
+
     void doCreate() override;
     void doUpdate(float const elapsed) override;
     void doDraw() const override;
     void doKill() override;
     void doDestroy() override;
+    void checkIfOvershootSoundShouldBePlayed();
+    void breakAfterSwingingForTooLong();
 };
 
 #endif // SWINGSWING_SWING_HPP

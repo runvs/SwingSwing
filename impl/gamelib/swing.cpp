@@ -31,10 +31,6 @@ Swing::Swing(std::shared_ptr<jt::Box2DWorldInterface> world)
 
 void Swing::doCreate()
 {
-    m_shape = std::make_shared<jt::Shape>();
-    m_shape->makeRect(jt::Vector2f { 16.0f, 16.0f }, textureManager());
-    m_shape->setOrigin(jt::OriginMode::CENTER);
-
     m_childAnimation = std::make_shared<jt::Animation>();
     m_childAnimation->loadFromAseprite("assets/kind.aseprite", textureManager());
     m_childAnimation->play("middle");
@@ -47,14 +43,6 @@ void Swing::doCreate()
 
 void Swing::doUpdate(float const elapsed)
 {
-    m_shape->setPosition(m_physicsObjectSwing->getPosition());
-    m_shape->update(elapsed);
-
-    if (m_isInBreakMode) {
-        m_shape->setColor(jt::Color { 150, 0, 0 });
-    } else {
-        m_shape->setColor(jt::colors::Gray);
-    }
     if (m_isInSwing) {
         m_timeInSwingMode += elapsed;
 
@@ -97,11 +85,8 @@ void Swing::doUpdate(float const elapsed)
         }
         m_wasRightLastFrame = isRight;
     }
-    if (m_timeInSwingMode >= 3.5f) {
-        enableBreakMode(true);
-        m_timeInSwingMode = 0.0f;
-        m_timeInSwingMode = false;
-    }
+
+    breakAfterSwingingForTooLong();
 
     auto v = m_physicsObjectSwing->getVelocity();
     auto const isNearGround = m_physicsObjectSwing->getPosition().y
@@ -112,7 +97,6 @@ void Swing::doUpdate(float const elapsed)
 
     if (isNearGround) {
         if (m_isInBreakMode) {
-            m_shape->setColor(jt::Color { 255, 0, 0 });
             v = v * GP::SwingGroundBrakingFactor();
 
             if (isNearBottomGround) { }
@@ -130,6 +114,15 @@ void Swing::doUpdate(float const elapsed)
         if (m_isInSwing) {
             // switch back to non-breaking when velocity is slow enough
             //            std::cout << jt::MathHelper::length(v) << std::endl;
+
+            if (!m_wasOnTop) {
+                if (getPosition().y < GP::SwingSuspensionPosition().y - GP::SwingLength() * 0.95f) {
+                    getGame()->logger().info("overshoot");
+                    m_wasOnTop = true;
+                    auto snd = getGame()->audio().addTemporarySound("event:/overshoot-shouts");
+                    snd->play();
+                }
+            }
             if (jt::MathHelper::length(v) < 5.0f) {
 
                 enableBreakMode(false);
@@ -141,15 +134,35 @@ void Swing::doUpdate(float const elapsed)
         }
     }
 
+    checkIfOvershootSoundShouldBePlayed();
+
     m_childAnimation->setPosition(m_physicsObjectSwing->getPosition());
     m_childAnimation->update(elapsed);
 }
 
-void Swing::doDraw() const
+void Swing::breakAfterSwingingForTooLong()
 {
-    //    m_shape->draw(renderTarget());
-    m_childAnimation->draw(renderTarget());
+    if (m_timeInSwingMode >= 3.5f) {
+        enableBreakMode(true);
+        m_timeInSwingMode = 0.0f;
+        m_timeInSwingMode = false;
+    }
 }
+
+void Swing::checkIfOvershootSoundShouldBePlayed()
+{
+    if (!m_wasOnTop) {
+        if (m_isInSwing) {
+            if (getPosition().y < GP::SwingSuspensionPosition().y - GP::SwingLength() * 0.95f) {
+                m_wasOnTop = true;
+                auto snd = getGame()->audio().addTemporarySound("event:/overshoot-shouts");
+                snd->play();
+            }
+        }
+    }
+}
+
+void Swing::doDraw() const { m_childAnimation->draw(renderTarget()); }
 
 void Swing::doKill() { }
 
@@ -163,6 +176,7 @@ void Swing::trigger(float strength)
     m_timeInSwingMode = 0.0f;
     m_childAnimation->play("right");
     m_wasGoingUpLastFrame = true;
+    m_wasOnTop = false;
 }
 
 void Swing::enableBreakMode(bool enable) { m_isInBreakMode = enable; }
