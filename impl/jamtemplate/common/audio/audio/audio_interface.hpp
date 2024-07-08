@@ -37,6 +37,7 @@ public:
     virtual ~AudioInterface() = default;
 
     virtual void setGroupVolume(std::string const& groupPath, float newVolume) = 0;
+    virtual float getGroupVolume(std::string const& groupPath) = 0;
 
     // no copy, no move
     AudioInterface(AudioInterface const&) = delete;

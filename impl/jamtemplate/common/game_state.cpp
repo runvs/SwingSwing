@@ -75,10 +75,12 @@ void jt::GameState::internalUpdate(float elapsed)
 void jt::GameState::checkForMuteUnmute()
 {
     if (getGame()->input().keyboard()->justPressed(jt::KeyCode::M)) {
-        getGame()->audio().setGroupVolume("bus:/", 0.0f);
-    }
-    if (getGame()->input().keyboard()->justPressed(jt::KeyCode::U)) {
-        getGame()->audio().setGroupVolume("bus:/", 1.0f);
+
+        if (getGame()->audio().getGroupVolume("bus:/") == 0.0f) {
+            getGame()->audio().setGroupVolume("bus:/", 1.0f);
+        } else {
+            getGame()->audio().setGroupVolume("bus:/", 0.0f);
+        }
     }
 }
 

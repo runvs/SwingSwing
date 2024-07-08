@@ -20,7 +20,7 @@ public:
 
     static std::string ExplanationText()
     {
-        return "Reach the designated swing height\nHold [Space] to swing\n[M/U] to mute/unmute "
+        return "Reach the designated swing height\nHold [Space] to swing\n[M] to mute/unmute "
                "audio";
     }
 
