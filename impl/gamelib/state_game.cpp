@@ -280,10 +280,11 @@ void StateGame::onDraw() const
         g->draw(renderTarget());
     }
     m_swingBack->draw(renderTarget());
-    m_swingLine1->draw(renderTarget());
+
     m_swingLine2->draw(renderTarget());
     drawObjects();
-
+    m_swingLine1->draw(renderTarget());
+    
     m_swingFront->draw(renderTarget());
 
     m_targetLineLower->draw(renderTarget());
