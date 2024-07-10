@@ -25,7 +25,7 @@ CPMAddPackage(
 CPMAddPackage(
         NAME aselib
         GITHUB_REPOSITORY Laguna1989/aselib
-        GIT_TAG master
+        GIT_TAG v0.3.1
         OPTIONS
         "ASE_LIB_ENABLE_UNIT_TESTS OFF"
 )
